@@ -16,7 +16,6 @@ dependencies:
   firebase_auth: 5.1.4
   cloud_firestore: 5.2.1
   provider: ^6.1.0
-  flutter_osm_plugin: ^1.1.0
   go_router: ^14.2.3
 
   cupertino_icons: ^1.0.6
