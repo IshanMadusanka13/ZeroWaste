@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return Container(
       color: Colors.tealAccent,
       child: Container(
-        child: Image.asset("assets/Logo.png"),
+        child: Image.asset("assets/logo.png"),
       ),
     );
   }
