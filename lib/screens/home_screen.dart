@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:zero_waste/providers/user_provider.dart';
 import 'package:zero_waste/widgets/submit_button.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -7,6 +9,10 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final userProvider = Provider.of<UserProvider>(context);
+    final user = userProvider.user;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Temporary Home Screen'),
@@ -36,6 +42,10 @@ class HomeScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    const SizedBox(height: 20),
+                    user != null
+                        ? Text('Logged in as: ${user.email}')
+                        : Text('No user logged in'),
                     const SizedBox(height: 20),
                     _buildDashboardButton(
                       context: context,

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -149,11 +150,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(height: 16),
                     TextFieldInput(
-                        title: "Password",
-                        icon: Icons.person,
-                        controller: _passwordController,
+                      title: "Password",
+                      icon: Icons.person,
+                      controller: _passwordController,
                       inputType: TextInputType.visiblePassword,
-                        validator: Validators.validatePassword,),
+                      validator: Validators.validatePassword,
+                    ),
                     const SizedBox(height: 24),
                     SubmitButton(
                         icon: Icons.send,
@@ -201,16 +203,60 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
       Provider.of<UserProvider>(context, listen: false).addUser(user).then((_) {
         HouseholdUserRepository().addUser(householdUser).then((_) {
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('User registered successfully!')));
+          showCupertinoDialog(
+            context: context,
+            builder: (context) {
+              return CupertinoAlertDialog(
+                title: const Text('User Registered Successfully'),
+                actions: <Widget>[
+                  CupertinoDialogAction(
+                    child: const Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
           context.go("/home");
         }).catchError((error, stack) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text('Failed to register HouseholdUser')));
+          showCupertinoDialog(
+            context: context,
+            builder: (context) {
+              return CupertinoAlertDialog(
+                title: const Text('Failed to Register Household User'),
+                content: Text(error.toString()),
+                actions: <Widget>[
+                  CupertinoDialogAction(
+                    child: const Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
         });
       }).catchError((error) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to register user')));
+        showCupertinoDialog(
+          context: context,
+          builder: (context) {
+            return CupertinoAlertDialog(
+              title: const Text('Failed to Register User'),
+              content: Text(error.toString()),
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
       });
     }
   }

@@ -1,8 +1,9 @@
-import 'package:flutter/gestures.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:zero_waste/models/user.dart';
-import 'package:zero_waste/repositories/user_repository.dart';
+import 'package:zero_waste/providers/user_provider.dart';
 import 'package:zero_waste/utils/validators.dart';
 import 'package:zero_waste/widgets/submit_button.dart';
 import 'package:zero_waste/widgets/text_field_input.dart';
@@ -40,18 +41,17 @@ class _LoginScreenState extends State<LoginScreen> {
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.green),
                 onPressed: () {
-                  context.go('/dashboard'); // Use GoRouter to navigate
+                  context.go('/home');
                 },
               ),
               flexibleSpace: FlexibleSpaceBar(
-                titlePadding: const EdgeInsets.only(
-                    left: 120.0, bottom: 155.0), // Moves the text upwards
+                titlePadding: const EdgeInsets.only(left: 120.0, bottom: 155.0),
                 title: const Text(
-                  'Record Garbage',
+                  'Login',
                   style: TextStyle(
-                    color: Colors.green, // Sets the text color to white
-                    fontWeight: FontWeight.bold, // Makes the text bold
-                    fontSize: 20.0, // Adjusts the font size
+                    color: Colors.green,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.0,
                   ),
                 ),
                 background: Image.asset(
@@ -102,13 +102,28 @@ class _LoginScreenState extends State<LoginScreen> {
         password: _passwordController.text,
         userType: 'HouseholdUser',
       );
-      UserRepository().login(user).then((_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('User registered successfully!')));
+      Provider.of<UserProvider>(context, listen: false).login(user).then((_) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Login success!')));
         context.go("/home");
       }).catchError((error, stack) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to register HouseholdUser')));
+        showCupertinoDialog(
+          context: context,
+          builder: (context) {
+            return CupertinoAlertDialog(
+              title: const Text('Login Failed'),
+              content: Text(error.toString()),
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
       });
     }
   }

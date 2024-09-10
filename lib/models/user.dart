@@ -10,7 +10,7 @@ class User {
     this.id = '',
     required this.email,
     required this.password,
-    required this.userType,
+    this.userType = '',
   });
 
   Map<String, dynamic> toMap() {

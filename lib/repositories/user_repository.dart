@@ -53,27 +53,23 @@ class UserRepository {
 
   Future<User> login(User user) async {
     try {
-      DocumentSnapshot snapshot = (await _usersCollection.where('email', isEqualTo: user.email).get()) as DocumentSnapshot<Object?>;
-      print('User email: ${user.email}');
-      print('Document email: ${snapshot.get('email')}');
+      QuerySnapshot querySnapshot = await _usersCollection.where('email', isEqualTo: user.email).get();
 
-      if (snapshot.exists) {
-        DocumentSnapshot documentSnapshot = snapshot;
+      if (querySnapshot.docs.isNotEmpty) {
+        DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
 
         if (documentSnapshot.get('password') == user.password) {
           return User.fromDocument(documentSnapshot);
         } else {
-          print("onvalid");
           throw Exception('Invalid password');
         }
       } else {
-        print("N/A");
         throw Exception('User not found');
       }
     } catch (e) {
-      print(e);
       throw Exception('Error getting user: $e');
     }
   }
+
 
 }
