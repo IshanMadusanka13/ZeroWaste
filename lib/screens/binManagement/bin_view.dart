@@ -15,7 +15,6 @@ class BinView extends StatefulWidget {
 
 class _BinViewState extends State<BinView>{
   late MapController controller;
-  double _currentZoom = 12.0;
 
   @override
   void initState() {
@@ -48,7 +47,7 @@ class _BinViewState extends State<BinView>{
               unFollowUser: false,
             ),
             zoomOption: ZoomOption(
-              initZoom: 12,
+              initZoom: 14,
               minZoomLevel: 3,
               maxZoomLevel: 19,
               stepZoom: 1.0,
@@ -59,18 +58,44 @@ class _BinViewState extends State<BinView>{
 
   Future<void> loadBins() async {
     List<WasteBin> bins = await WasteBinRepository().getAllBins();
-    print("bins are ${bins}");
     for (WasteBin bin in bins) {
       await controller.addMarker(
         GeoPoint(latitude: bin.latitude, longitude: bin.longitude),
-        markerIcon: const MarkerIcon(
-          icon: Icon(
-            CustomBins.plasticbin,
-            color: Colors.blue,
-            size: 56,
-          ),
+        markerIcon: MarkerIcon(
+          icon: CustomBins.getBinIcon(bin.binType),
         ),
+
       );
     }
   }
+
+  void _onMarkerTap(WasteBin bin) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Bin Details'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Type: ${bin.binType}'),
+              Text('Latitude: ${bin.latitude}'),
+              Text('Longitude: ${bin.longitude}'),
+              // Add more details as needed
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
 }

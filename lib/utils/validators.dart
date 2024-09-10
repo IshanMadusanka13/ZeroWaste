@@ -27,6 +27,16 @@ class Validators {
     return null;
   }
 
+  static String? validateMobile(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your mobile number';
+    } else if (!RegExp(r'^(\+94|0094)?07\d{8}$').hasMatch(value)) {
+      return 'Please enter a valid Sri Lankan mobile number';
+    }
+    return null;
+  }
+
+
   static String? validatePassword(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your password';

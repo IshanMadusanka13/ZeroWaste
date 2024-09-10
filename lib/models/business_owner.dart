@@ -1,48 +1,40 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:zero_waste/models/user.dart';
 
-class HouseholdUser {
+class BusinessOwner {
   String id;
-  String fName;
-  String lName;
-  String nic;
+  String companyName;
+  String contactPersonName;
   String mobile;
-  DateTime dob;
   String address;
   User user;
 
-  HouseholdUser(
+  BusinessOwner(
       {this.id = '',
-      required this.fName,
-      required this.lName,
-      required this.nic,
+        required this.companyName,
+        required this.contactPersonName,
         required this.mobile,
-      required this.dob,
-      required this.address,
-      required this.user});
+        required this.address,
+        required this.user});
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'fName': fName,
-      'lName': lName,
-      'nic': nic,
+      'companyName': companyName,
+      'contactPersonName': contactPersonName,
       'mobile': mobile,
-      'dob': dob,
       'address': address,
       'user': user.toMap(),
     };
   }
 
-  factory HouseholdUser.fromDocument(DocumentSnapshot doc) {
+  factory BusinessOwner.fromDocument(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
-    return HouseholdUser(
+    return BusinessOwner(
       id: doc.id,
-      fName: data['fName'],
-      lName: data['lName'],
-      nic: data['nic'],
+      companyName: data['companyName'],
+      contactPersonName: data['contactPersonName'],
       mobile: data['mobile'],
-      dob: data['dob'],
       address: data['address'],
       user: data['user'],
     );

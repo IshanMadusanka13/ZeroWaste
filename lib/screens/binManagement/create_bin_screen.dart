@@ -90,6 +90,7 @@ class _CreateBinScreenState extends State<CreateBinScreen> {
                           'Glass',
                           'Paper',
                           'Metal',
+                          'E-waste',
                         ],
                         selectedValue: _binType,
                         onChanged: (String? newValue) {
