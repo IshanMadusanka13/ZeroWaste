@@ -3,7 +3,7 @@ import 'package:zero_waste/models/household_user.dart';
 
 class HouseholdUserRepository {
   final CollectionReference _usersCollection =
-  FirebaseFirestore.instance.collection('householdUser');
+      FirebaseFirestore.instance.collection('householdUser');
 
   Future<void> addUser(HouseholdUser user) async {
     try {
@@ -32,7 +32,9 @@ class HouseholdUserRepository {
   Future<List<HouseholdUser>> getAllUsers() async {
     try {
       QuerySnapshot snapshot = await _usersCollection.get();
-      return snapshot.docs.map((doc) => HouseholdUser.fromDocument(doc)).toList();
+      return snapshot.docs
+          .map((doc) => HouseholdUser.fromDocument(doc))
+          .toList();
     } catch (e) {
       throw Exception('Error getting all HouseholdUser: $e');
     }
@@ -51,4 +53,20 @@ class HouseholdUserRepository {
     }
   }
 
+  Future<HouseholdUser?> getHouseholdUserByEmail(String email) async {
+    try {
+      QuerySnapshot querySnapshot =
+          await _usersCollection.where('user.email', isEqualTo: email).get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        DocumentSnapshot doc = querySnapshot.docs.first;
+        return HouseholdUser.fromDocument(doc);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Error getting HouseholdUser by email: $e');
+      return null;
+    }
+  }
 }

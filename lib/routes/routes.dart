@@ -17,15 +17,15 @@ class AppRouter {
       GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
 
       //User Management Routes
-      GoRoute(path: '/user/login', builder: (context, state) => LoginScreen()),
+      GoRoute(path: '/user/login', builder: (context, state) => const LoginScreen()),
       GoRoute(
           path: '/user/register',
-          builder: (context, state) => RegisterScreen()),
+          builder: (context, state) => const RegisterScreen()),
 
       //Bin Management Routes
-      GoRoute(path: '/bin/view', builder: (context, state) => BinView()),
+      GoRoute(path: '/bin/view', builder: (context, state) => const BinView()),
       GoRoute(
-          path: '/bin/create', builder: (context, state) => CreateBinScreen()),
+          path: '/bin/create', builder: (context, state) => const CreateBinScreen()),
 
       //Garbage Collection Routes
       GoRoute(

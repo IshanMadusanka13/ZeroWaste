@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:go_router/go_router.dart';
@@ -13,7 +15,7 @@ class BinView extends StatefulWidget {
   State<BinView> createState() => _BinViewState();
 }
 
-class _BinViewState extends State<BinView>{
+class _BinViewState extends State<BinView> {
   late MapController controller;
 
   @override
@@ -25,6 +27,7 @@ class _BinViewState extends State<BinView>{
       unFollowUser: false,
     ));
     loadBins();
+
   }
 
   @override
@@ -64,38 +67,8 @@ class _BinViewState extends State<BinView>{
         markerIcon: MarkerIcon(
           icon: CustomBins.getBinIcon(bin.binType),
         ),
-
       );
     }
   }
-
-  void _onMarkerTap(WasteBin bin) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Bin Details'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Type: ${bin.binType}'),
-              Text('Latitude: ${bin.latitude}'),
-              Text('Longitude: ${bin.longitude}'),
-              // Add more details as needed
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-
+  
 }
