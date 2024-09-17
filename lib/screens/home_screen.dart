@@ -9,7 +9,6 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final userProvider = Provider.of<UserProvider>(context);
     final user = userProvider.user;
 
@@ -79,21 +78,21 @@ class HomeScreen extends StatelessWidget {
                       context: context,
                       text: 'Record Garbage Entry',
                       icon: Icons.add_circle_outline,
-                      route: '/record-entry',
+                      route: '/collection/entry',
                     ),
                     const SizedBox(height: 20),
                     _buildDashboardButton(
                       context: context,
                       text: 'Manage Rewards',
                       icon: Icons.card_giftcard,
-                      route: '/manage-rewards',
+                      route: '/reward/manage',
                     ),
                     const SizedBox(height: 20),
                     _buildDashboardButton(
                       context: context,
                       text: 'User History',
                       icon: Icons.history,
-                      route: '/user-history',
+                      route: '/collection/history',
                     ),
                   ],
                 ),

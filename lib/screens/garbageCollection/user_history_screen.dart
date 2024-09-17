@@ -23,7 +23,7 @@ class _UserHistoryScreenState extends State<UserHistoryScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            context.go('/dashboard');
+            context.go('/home');
           },
         ),
         title: const Text('User History'),
@@ -147,14 +147,12 @@ class _UserHistoryScreenState extends State<UserHistoryScreen> {
                             ),
                           ),
                         ),
-
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             IconButton(
                               icon: const Icon(Icons.edit, color: Colors.green),
                               onPressed: () {
-
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -243,9 +241,8 @@ class _UserHistoryScreenState extends State<UserHistoryScreen> {
     );
   }
 
-  void _deleteEntry(String entryId) async{
-    await GarbageEntryRepository().deleteEntry(entryId)
-        .then((_) {
+  void _deleteEntry(String entryId) async {
+    await GarbageEntryRepository().deleteEntry(entryId).then((_) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Entry deleted successfully!'),

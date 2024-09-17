@@ -213,7 +213,7 @@ class _RecordGarbageEntryScreenState extends State<RecordGarbageEntryScreen> {
                 leading: IconButton(
                   icon: const Icon(Icons.arrow_back, color: Colors.green),
                   onPressed: () {
-                    context.go('/dashboard'); // Use GoRouter to navigate
+                    context.go('/home'); // Use GoRouter to navigate
                   },
                 ),
                 flexibleSpace: FlexibleSpaceBar(
