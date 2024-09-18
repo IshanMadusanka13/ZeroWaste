@@ -7,7 +7,7 @@ class BusinessOwner {
   String contactPersonName;
   String mobile;
   String address;
-  User user;
+  String userId;
 
   BusinessOwner(
       {this.id = '',
@@ -15,7 +15,7 @@ class BusinessOwner {
         required this.contactPersonName,
         required this.mobile,
         required this.address,
-        required this.user});
+        required this.userId});
 
   Map<String, dynamic> toMap() {
     return {
@@ -24,7 +24,7 @@ class BusinessOwner {
       'contactPersonName': contactPersonName,
       'mobile': mobile,
       'address': address,
-      'user': user.toMap(),
+      'userId': userId,
     };
   }
 
@@ -36,7 +36,7 @@ class BusinessOwner {
       contactPersonName: data['contactPersonName'],
       mobile: data['mobile'],
       address: data['address'],
-      user: data['user'],
+      userId: data['userId'],
     );
   }
 }

@@ -24,7 +24,6 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen>
     with TickerProviderStateMixin {
-
   late final TabController _tabController;
   final _formKey = GlobalKey<FormState>();
   final _businessFormKey = GlobalKey<FormState>();
@@ -346,58 +345,37 @@ class _RegisterScreenState extends State<RegisterScreen>
         nic: _nicController.text,
         mobile: _mobileNoController.text,
         address: _addressController.text,
-        user: user,
+        userId: '',
       );
-      Provider.of<UserProvider>(context, listen: false).addUser(user).then((_) {
-        HouseholdUserRepository().addUser(householdUser).then((_) {
-          showCupertinoDialog(
-            context: context,
-            builder: (context) {
-              return CupertinoAlertDialog(
-                title: const Text('User Registered Successfully'),
-                actions: <Widget>[
-                  CupertinoDialogAction(
-                    child: const Text('OK'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              );
-            },
-          );
-          context.go("/home");
-        }).catchError((error, stack) {
-          showCupertinoDialog(
-            context: context,
-            builder: (context) {
-              return CupertinoAlertDialog(
-                title: const Text('Failed to Register Household User'),
-                content: Text(error.toString()),
-                actions: <Widget>[
-                  CupertinoDialogAction(
-                    child: const Text('OK'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              );
-            },
-          );
-        });
-      }).catchError((error) {
+      HouseholdUserRepository().addUser(user, householdUser).then((_) {
         showCupertinoDialog(
           context: context,
           builder: (context) {
             return CupertinoAlertDialog(
-              title: const Text('Failed to Register User'),
+              title: const Text('User Registered Successfully'),
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    context.go("/home");
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }).catchError((error, stack) {
+        showCupertinoDialog(
+          context: context,
+          builder: (context) {
+            return CupertinoAlertDialog(
+              title: const Text('Failed to Register Household User'),
               content: Text(error.toString()),
               actions: <Widget>[
                 CupertinoDialogAction(
                   child: const Text('OK'),
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    context.go("/home");
                   },
                 ),
               ],
@@ -420,58 +398,37 @@ class _RegisterScreenState extends State<RegisterScreen>
         contactPersonName: _contactPersonController.text,
         mobile: _mobileNoController.text,
         address: _addressController.text,
-        user: user,
+        userId: '',
       );
-      Provider.of<UserProvider>(context, listen: false).addUser(user).then((_) {
-        BusinessOwnerRepository().addBusinessUser(businessOwner).then((_) {
-          showCupertinoDialog(
-            context: context,
-            builder: (context) {
-              return CupertinoAlertDialog(
-                title: const Text('User Registered Successfully'),
-                actions: <Widget>[
-                  CupertinoDialogAction(
-                    child: const Text('OK'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              );
-            },
-          );
-          context.go("/home");
-        }).catchError((error, stack) {
-          showCupertinoDialog(
-            context: context,
-            builder: (context) {
-              return CupertinoAlertDialog(
-                title: const Text('Failed to Register Business User'),
-                content: Text(error.toString()),
-                actions: <Widget>[
-                  CupertinoDialogAction(
-                    child: const Text('OK'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              );
-            },
-          );
-        });
-      }).catchError((error) {
+      BusinessOwnerRepository().addBusinessUser(user, businessOwner).then((_) {
         showCupertinoDialog(
           context: context,
           builder: (context) {
             return CupertinoAlertDialog(
-              title: const Text('Failed to Register User'),
+              title: const Text('User Registered Successfully'),
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    context.go("/home");
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }).catchError((error, stack) {
+        showCupertinoDialog(
+          context: context,
+          builder: (context) {
+            return CupertinoAlertDialog(
+              title: const Text('Failed to Register Business User'),
               content: Text(error.toString()),
               actions: <Widget>[
                 CupertinoDialogAction(
                   child: const Text('OK'),
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    context.go("/home");
                   },
                 ),
               ],

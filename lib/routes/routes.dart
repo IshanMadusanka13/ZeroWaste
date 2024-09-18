@@ -8,6 +8,7 @@ import 'package:zero_waste/screens/rewardingSystem/manage_rewards_screen.dart';
 import 'package:zero_waste/screens/userManagement/login_screen.dart';
 import 'package:zero_waste/screens/splash_screen.dart';
 import 'package:zero_waste/screens/userManagement/register_screen.dart';
+import 'package:zero_waste/screens/userManagement/user_profile.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -39,6 +40,10 @@ class AppRouter {
       GoRoute(
           path: '/reward/manage',
           builder: (context, state) => const ManageRewardsScreen()),
+
+      GoRoute(
+          path: '/profile',
+          builder: (context, state) => const UserProfile()),
     ],
   );
 }

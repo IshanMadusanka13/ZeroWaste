@@ -1,19 +1,43 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:zero_waste/models/household_user.dart';
+import 'package:zero_waste/models/user.dart';
 import 'package:zero_waste/providers/user_provider.dart';
 import 'package:zero_waste/repositories/household_user_repository.dart';
-import 'package:zero_waste/repositories/user_repository.dart';
 
-class UserProfile extends StatelessWidget {
+class UserProfile extends StatefulWidget {
   const UserProfile({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final user = Provider.of<UserProvider>(context).user;
-    getUserDetails(user as User);
+  State<UserProfile> createState() => _UserProfileState();
+}
 
+class _UserProfileState extends State<UserProfile> {
+  late HouseholdUser hhu;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final user = userProvider.user;
+    getUserDetails(user);
+  }
+
+  Future<void> getUserDetails(User? user) async {
+    print(user?.toMap());
+    HouseholdUser? fetchedUser =
+        await HouseholdUserRepository().getHouseholdUserByUserId(user!.id);
+    if (fetchedUser != null) {
+      setState(() {
+        hhu = fetchedUser;
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -24,47 +48,38 @@ class UserProfile extends StatelessWidget {
           ),
         ),
         child: SafeArea(
-          child: CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                expandedHeight: 200.0,
-                floating: false,
-                pinned: true,
-                leading: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.green),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
+          child: isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : CustomScrollView(
+                  slivers: [
+                    SliverAppBar(
+                      expandedHeight: 200.0,
+                      floating: false,
+                      pinned: true,
+                      leading: IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.green),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ),
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Name: ${hhu.fName}'),
+                            SizedBox(height: 8.0),
+                            Text('Email: ${hhu.mobile}'),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                /*flexibleSpace: FlexibleSpaceBar(
-                  title: Text(user.name),
-                  background: Image.network(
-                    user.profilePictureUrl,
-                    fit: BoxFit.cover,
-                  ),
-                ),*/
-              ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Name: ${user.name}'),
-                      SizedBox(height: 8.0),
-                      Text('Email: ${user?.email}'),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );
-  }
-
-  Future<void> getUserDetails(User user) async {
-    HouseholdUser? hhu = await HouseholdUserRepository().getHouseholdUserByEmail(user.email!);
   }
 }

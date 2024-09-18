@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:zero_waste/models/user.dart';
 
 class HouseholdUser {
   String id;
@@ -9,17 +8,17 @@ class HouseholdUser {
   String mobile;
   DateTime dob;
   String address;
-  User user;
+  String userId;
 
   HouseholdUser(
       {this.id = '',
       required this.fName,
       required this.lName,
       required this.nic,
-        required this.mobile,
+      required this.mobile,
       required this.dob,
       required this.address,
-      required this.user});
+      required this.userId});
 
   Map<String, dynamic> toMap() {
     return {
@@ -30,7 +29,7 @@ class HouseholdUser {
       'mobile': mobile,
       'dob': dob,
       'address': address,
-      'user': user.toMap(),
+      'userId': userId,
     };
   }
 
@@ -42,9 +41,9 @@ class HouseholdUser {
       lName: data['lName'],
       nic: data['nic'],
       mobile: data['mobile'],
-      dob: data['dob'],
+      dob: (data['dob'] as Timestamp).toDate(),
       address: data['address'],
-      user: data['user'],
+      userId: data['userId'],
     );
   }
 }

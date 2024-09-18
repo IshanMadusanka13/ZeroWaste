@@ -1,13 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:zero_waste/models/household_user.dart';
+import 'package:zero_waste/models/user.dart';
+import 'package:zero_waste/repositories/user_repository.dart';
 
 class HouseholdUserRepository {
   final CollectionReference _usersCollection =
       FirebaseFirestore.instance.collection('householdUser');
 
-  Future<void> addUser(HouseholdUser user) async {
+  Future<void> addUser(User user, HouseholdUser householdUser) async {
     try {
-      await _usersCollection.add(user.toMap());
+      DocumentReference userId = await UserRepository().addUser(user);
+      householdUser.userId = userId.id;
+      await _usersCollection.add(householdUser.toMap());
     } catch (e) {
       throw Exception('Error adding HouseholdUser: $e');
     }
@@ -53,10 +57,11 @@ class HouseholdUserRepository {
     }
   }
 
-  Future<HouseholdUser?> getHouseholdUserByEmail(String email) async {
+  Future<HouseholdUser?> getHouseholdUserByUserId(String userId) async {
+    print(userId);
     try {
       QuerySnapshot querySnapshot =
-          await _usersCollection.where('user.email', isEqualTo: email).get();
+          await _usersCollection.where('userId', isEqualTo: userId).get();
 
       if (querySnapshot.docs.isNotEmpty) {
         DocumentSnapshot doc = querySnapshot.docs.first;

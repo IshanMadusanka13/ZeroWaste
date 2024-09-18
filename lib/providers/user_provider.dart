@@ -7,15 +7,6 @@ class UserProvider with ChangeNotifier {
   User? _user;
   User? get user => _user;
 
-  Future<void> addUser(User user) async {
-    try {
-      await _userRepository.addUser(user);
-      notifyListeners();
-    } catch (e) {
-      print('Error in UserProvider: $e');
-    }
-  }
-
   Future<void> login(User user) async {
     try {
       User loggedInUser = await _userRepository.login(user);

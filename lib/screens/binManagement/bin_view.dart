@@ -5,7 +5,6 @@ import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:go_router/go_router.dart';
 import 'package:zero_waste/models/waste_bin.dart';
 import 'package:zero_waste/repositories/waste_bin_repository.dart';
-import 'package:zero_waste/routes/routes.dart';
 import 'package:zero_waste/utils/custom_bins_icons.dart';
 
 class BinView extends StatefulWidget {
@@ -27,7 +26,6 @@ class _BinViewState extends State<BinView> {
       unFollowUser: false,
     ));
     loadBins();
-
   }
 
   @override
@@ -43,6 +41,7 @@ class _BinViewState extends State<BinView> {
           ),
         ),
         body: OSMFlutter(
+          onGeoPointClicked: _onGeoPointClicked,
           controller: controller,
           osmOption: const OSMOption(
             userTrackingOption: UserTrackingOption(
@@ -70,5 +69,24 @@ class _BinViewState extends State<BinView> {
       );
     }
   }
-  
+
+  void _onGeoPointClicked(GeoPoint geoPoint) {
+    print('Marker clicked at: ${geoPoint.latitude}, ${geoPoint.longitude}');
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Bin Location'),
+          content: Text(
+              'Clicked Location: ${geoPoint.latitude}, ${geoPoint.longitude}'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
