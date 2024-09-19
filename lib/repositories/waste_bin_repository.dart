@@ -13,7 +13,7 @@ class WasteBinRepository {
     }
   }
 
-  Future<void> updateBin(String binId, WasteBin wasteBin) async {
+  Future<void> updateBin(WasteBin wasteBin) async {
     try {
       await _binCollection.doc(wasteBin.id).update(wasteBin.toMap());
     } catch (e) {

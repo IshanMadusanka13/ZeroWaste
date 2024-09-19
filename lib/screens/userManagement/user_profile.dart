@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:zero_waste/models/household_user.dart';
 import 'package:zero_waste/models/user.dart';
@@ -52,17 +53,6 @@ class _UserProfileState extends State<UserProfile> {
               ? const Center(child: CircularProgressIndicator())
               : CustomScrollView(
                   slivers: [
-                    SliverAppBar(
-                      expandedHeight: 200.0,
-                      floating: false,
-                      pinned: true,
-                      leading: IconButton(
-                        icon: const Icon(Icons.arrow_back, color: Colors.green),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
@@ -72,6 +62,29 @@ class _UserProfileState extends State<UserProfile> {
                             Text('Name: ${hhu.fName}'),
                             SizedBox(height: 8.0),
                             Text('Email: ${hhu.mobile}'),
+
+                            const SizedBox(height: 20),
+                            _buildDashboardButton(
+                              context: context,
+                              text: 'Dark Mode',
+                              icon: Icons.create,
+                              route: '/',
+                            ),
+                            const SizedBox(height: 20),
+                            _buildDashboardButton(
+                              context: context,
+                              text: 'Edit Profile',
+                              icon: Icons.create,
+                              route: '/',
+                            ),
+                            const SizedBox(height: 20),
+                            _buildDashboardButton(
+                              context: context,
+                              text: 'Sign Out',
+                              icon: Icons.create,
+                              route: '/',
+                            ),
+
                           ],
                         ),
                       ),
@@ -82,4 +95,37 @@ class _UserProfileState extends State<UserProfile> {
       ),
     );
   }
+  Widget _buildDashboardButton({
+    required BuildContext context,
+    required String text,
+    required IconData icon,
+    required String route,
+  }) {
+    return ElevatedButton.icon(
+      onPressed: () => context.go(route),
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        elevation: 5,
+        backgroundColor: Colors.green.shade600,
+        shadowColor: Colors.green.shade300,
+      ),
+      icon: Icon(
+        icon,
+        color: Colors.white,
+        size: 24,
+      ),
+      label: Text(
+        text,
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
 }
+

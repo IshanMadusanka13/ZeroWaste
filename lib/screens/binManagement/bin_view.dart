@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:go_router/go_router.dart';
@@ -20,7 +21,9 @@ class BinView extends StatefulWidget {
 class _BinViewState extends State<BinView> {
   late MapController controller;
   late List<WasteBin> bins;
+  late WasteBin selectedBin;
   bool updateStatus = false;
+  GeoPoint? _binLocation;
 
   @override
   void initState() {
@@ -35,11 +38,11 @@ class _BinViewState extends State<BinView> {
 
   @override
   Widget build(BuildContext context) {
-
     controller.listenerMapLongTapping.addListener(() async {
-      if(updateStatus){
+      print('Long Press $updateStatus');
+      if (updateStatus) {
         if (controller.listenerMapLongTapping.value != null) {
-          //createPin(controller.listenerMapLongTapping.value);
+          createPin(controller.listenerMapLongTapping.value!);
         }
       }
     });
@@ -73,8 +76,6 @@ class _BinViewState extends State<BinView> {
   }
 
   void _onGeoPointClicked(GeoPoint geoPoint) {
-    late WasteBin selectedBin;
-
     for (WasteBin bin in bins) {
       if (bin.latitude == geoPoint.latitude &&
           bin.longitude == geoPoint.longitude) {
@@ -88,7 +89,10 @@ class _BinViewState extends State<BinView> {
         context: context,
         actions: [
           IconsOutlineButton(
-            onPressed: () {updateStatus = true;},
+            onPressed: () {
+              updateStatus = true;
+              Navigator.of(context).pop();
+            },
             text: 'Change',
             iconData: Icons.location_pin,
             textStyle: const TextStyle(color: Colors.grey),
@@ -97,6 +101,7 @@ class _BinViewState extends State<BinView> {
           IconsButton(
             onPressed: () {
               deleteBin(selectedBin);
+              Navigator.of(context).pop();
             },
             text: 'Remove',
             iconData: Icons.delete,
@@ -105,6 +110,62 @@ class _BinViewState extends State<BinView> {
             iconColor: Colors.white,
           ),
         ]);
+  }
+
+  Future<void> createPin(GeoPoint location) async {
+    if (_binLocation == null) {
+      _binLocation = location;
+      await controller.addMarker(
+        _binLocation!,
+        markerIcon: const MarkerIcon(
+          icon: Icon(
+            Icons.location_on,
+            color: Colors.red,
+            size: 48,
+          ),
+        ),
+      );
+    } else {
+      GeoPoint? oldBinLocation = _binLocation;
+      _binLocation = location;
+      await controller.changeLocationMarker(
+        oldLocation: oldBinLocation!,
+        newLocation: _binLocation!,
+        markerIcon: const MarkerIcon(
+          icon: Icon(
+            Icons.location_on,
+            color: Colors.red,
+            size: 48,
+          ),
+        ),
+      );
+    }
+
+    showCupertinoDialog(
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: const Text('Confirm New Marker?'),
+          actions: <Widget>[
+            CupertinoDialogAction(
+              child: const Text('Cancel'),
+              onPressed: () {
+                _binLocation = null;
+                Navigator.of(context).pop();
+              },
+            ),
+            CupertinoDialogAction(
+              child: const Text('Confirm'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _binLocation = null;
+                updateBin(location);
+              },
+            )
+          ],
+        );
+      },
+    );
   }
 
   Future<void> loadBins() async {
@@ -119,23 +180,83 @@ class _BinViewState extends State<BinView> {
     }
   }
 
-  void updateBin(WasteBin bin) {
-    WasteBinRepository().updateBin(bin.id, bin).then((_) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('WasteBin Updated successfully!')));
+  void updateBin(GeoPoint location) {
+    WasteBin newBin = selectedBin;
+    newBin.longitude = location.longitude;
+    newBin.latitude = location.latitude;
+
+    WasteBinRepository().updateBin(selectedBin).then((_) {
+      showCupertinoDialog(
+        context: context,
+        builder: (context) {
+          return CupertinoAlertDialog(
+            title: const Text('Successfully to Updated WasteBin'),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  context.go("/home");
+                },
+              ),
+            ],
+          );
+        },
+      );
     }).catchError((error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to Update WasteBin')));
+      showCupertinoDialog(
+        context: context,
+        builder: (context) {
+          return CupertinoAlertDialog(
+            title: const Text('Failed to Update WasteBin'),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
     });
   }
 
   void deleteBin(WasteBin bin) {
     WasteBinRepository().deleteBin(bin.id).then((_) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('WasteBin Deleted successfully!')));
+      showCupertinoDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CupertinoAlertDialog(
+              title: const Text('WasteBin Deleted'),
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    context.go("/home");
+                  },
+                ),
+              ],
+            );
+          });
     }).catchError((error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to Delete WasteBin')));
+      showCupertinoDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CupertinoAlertDialog(
+              title: const Text('Failed to Delete WasteBin'),
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          });
     });
   }
 }
