@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:zero_waste/models/garbage_entry.dart';
 import 'package:zero_waste/repositories/garbage_entry_repository.dart';
+import 'package:zero_waste/repositories/rewards_repository.dart';
 import 'package:zero_waste/widgets/submit_button.dart';
 
 class EditEntryScreen extends StatefulWidget {
@@ -51,12 +52,12 @@ class _EditEntryScreenState extends State<EditEntryScreen> {
   }
 
   void _updateEntry(BuildContext context) {
-    double plasticWeight = double.tryParse(plasticController.text) ?? -1;
-    double glassWeight = double.tryParse(glassController.text) ?? -1;
-    double paperWeight = double.tryParse(paperController.text) ?? -1;
-    double organicWeight = double.tryParse(organicController.text) ?? -1;
-    double metalWeight = double.tryParse(metalController.text) ?? -1;
-    double ewasteWeight = double.tryParse(ewasteController.text) ?? -1;
+    double plasticWeight = double.tryParse(plasticController.text) ?? 0;
+    double glassWeight = double.tryParse(glassController.text) ?? 0;
+    double paperWeight = double.tryParse(paperController.text) ?? 0;
+    double organicWeight = double.tryParse(organicController.text) ?? 0;
+    double metalWeight = double.tryParse(metalController.text) ?? 0;
+    double ewasteWeight = double.tryParse(ewasteController.text) ?? 0;
 
     if (plasticWeight < 0 ||
         glassWeight < 0 ||
@@ -81,7 +82,8 @@ class _EditEntryScreenState extends State<EditEntryScreen> {
         organicWeight: organicWeight,
         metelWeight: metalWeight,
         eWasteWeight: ewasteWeight,
-        date: widget.entry.date);
+        date: widget.entry.date,
+        totalPoints: 0);
 
     GarbageEntryRepository()
         .updateEntry(widget.entry.id, garbageEntry)
@@ -92,6 +94,7 @@ class _EditEntryScreenState extends State<EditEntryScreen> {
           backgroundColor: Colors.green,
         ),
       );
+      RewardsRepository().recalculateTotalRewards();
 
       Future.delayed(const Duration(seconds: 2), () {
         context.go("/collection/history");
@@ -129,9 +132,7 @@ class _EditEntryScreenState extends State<EditEntryScreen> {
               _buildWasteCard('E-Waste Weight', ewasteController, Icons.memory),
               const SizedBox(height: 20),
               SubmitButton(
-                  icon: Icons.send,
-                  text: "Save",
-                  whenPressed: _updateEntry),
+                  icon: Icons.send, text: "Save", whenPressed: _updateEntry),
             ],
           ),
         ),

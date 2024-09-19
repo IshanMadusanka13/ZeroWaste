@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:zero_waste/models/garbage_entry.dart';
 
-class GarbageEntryRepository{
+class GarbageEntryRepository {
   final CollectionReference _garbageEntryCollectionCollection =
-  FirebaseFirestore.instance.collection('garbageEntries');
+      FirebaseFirestore.instance.collection('garbageEntries');
 
   Future<void> addEntry(GarbageEntry garbageEntry) async {
     try {
@@ -15,7 +15,9 @@ class GarbageEntryRepository{
 
   Future<void> updateEntry(String garbageId, GarbageEntry garbageEntry) async {
     try {
-      await _garbageEntryCollectionCollection.doc(garbageId).update(garbageEntry.toMap());
+      await _garbageEntryCollectionCollection
+          .doc(garbageId)
+          .update(garbageEntry.toMap());
     } catch (e) {
       throw Exception('Error updating GarbageEntry: $e');
     }
@@ -28,5 +30,4 @@ class GarbageEntryRepository{
       throw Exception('Error deleting GarbageEntry: $e');
     }
   }
-
 }

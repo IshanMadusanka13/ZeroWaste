@@ -1,4 +1,18 @@
 class Validators {
+  static String? validatePositiveNumber(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'This field is required';
+    }
+    final number = double.tryParse(value);
+    if (number == null) {
+      return 'Please enter a valid number';
+    }
+    if (number <= 0) {
+      return 'Please enter a positive number';
+    }
+    return null;
+  }
+
   static String? nullCheck(String? value) {
     if (value == null || value.isEmpty) {
       return 'This Field is Required';

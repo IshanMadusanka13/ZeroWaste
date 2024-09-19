@@ -8,7 +8,10 @@ import 'package:go_router/go_router.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:zero_waste/models/points.dart';
 import 'package:zero_waste/repositories/garbage_entry_repository.dart';
+import 'package:zero_waste/repositories/points_repository.dart';
+import 'package:zero_waste/repositories/rewards_repository.dart';
 import 'package:zero_waste/utils/validators.dart';
 import 'package:zero_waste/widgets/submit_button.dart';
 import 'package:zero_waste/widgets/text_field_input.dart';
@@ -30,6 +33,43 @@ class _RecordGarbageEntryScreenState extends State<RecordGarbageEntryScreen> {
   final _organicWeight = TextEditingController();
   final _metelWeight = TextEditingController();
   final _eWasteWeight = TextEditingController();
+  double _totalPoints = 0.0;
+
+  // Method to calculate points
+  Future<double> _calculatePoints() async {
+    final PointsRepository pointsRepository = PointsRepository();
+    Points? points;
+    try {
+      points = await pointsRepository.getPointDetails();
+    } catch (e) {
+      print('Error fetching point details: $e');
+      return 0.0;
+    }
+
+    if (points == null) {
+      return 0.0;
+    }
+
+    double plasticPoints =
+        (double.tryParse(_plasticWeight.text) ?? 0) * points.plasticPointsPerKg;
+    double glassPoints =
+        (double.tryParse(_glassWeight.text) ?? 0) * points.glassPointsPerKg;
+    double paperPoints =
+        (double.tryParse(_paperWeight.text) ?? 0) * points.paperPointsPerKg;
+    double organicPoints =
+        (double.tryParse(_organicWeight.text) ?? 0) * points.organicPointsPerKg;
+    double metalPoints =
+        (double.tryParse(_metelWeight.text) ?? 0) * points.metalPointsPerKg;
+    double eWastePoints =
+        (double.tryParse(_eWasteWeight.text) ?? 0) * points.eWastePointsPerKg;
+
+    return plasticPoints +
+        glassPoints +
+        paperPoints +
+        organicPoints +
+        metalPoints +
+        eWastePoints;
+  }
 
   void _submitEntry(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
@@ -49,6 +89,8 @@ class _RecordGarbageEntryScreenState extends State<RecordGarbageEntryScreen> {
         return;
       }
 
+      _totalPoints = await _calculatePoints(); // Calculate the total points
+
       GarbageEntry entry = GarbageEntry(
         userId: _userId.text,
         plasticWeight: double.tryParse(_plasticWeight.text) ?? 0.0,
@@ -58,14 +100,18 @@ class _RecordGarbageEntryScreenState extends State<RecordGarbageEntryScreen> {
         metelWeight: double.tryParse(_metelWeight.text) ?? 0.0,
         eWasteWeight: double.tryParse(_eWasteWeight.text) ?? 0.0,
         date: DateTime.now(),
+        totalPoints: _totalPoints,
       );
 
       await GarbageEntryRepository().addEntry(entry);
 
+      await RewardsRepository().updateRewardsFromGarbageEntries();
+
       await _generateAndDownloadPDF(entry);
 
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Garbage entry recorded and PDF downloaded!'),
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content:
+            Text('Garbage entry recorded! You earned $_totalPoints points!'),
         backgroundColor: Colors.green,
       ));
     }
@@ -165,6 +211,7 @@ class _RecordGarbageEntryScreenState extends State<RecordGarbageEntryScreen> {
                     'Total Weight:',
                     '${entry.plasticWeight + entry.glassWeight + entry.paperWeight + entry.organicWeight + entry.metelWeight + entry.eWasteWeight} kg',
                   ),
+                  buildTableRow('Total Points:', '${entry.totalPoints} points'),
                 ],
               ),
               pw.SizedBox(height: 20),
@@ -179,6 +226,7 @@ class _RecordGarbageEntryScreenState extends State<RecordGarbageEntryScreen> {
                     fontSize: 14,
                     color: PdfColors.green900,
                     fontStyle: pw.FontStyle.italic,
+                    fontWeight: pw.FontWeight.bold,
                   ),
                 ),
               ),
@@ -288,6 +336,7 @@ class _RecordGarbageEntryScreenState extends State<RecordGarbageEntryScreen> {
                             controller: _eWasteWeight,
                             inputType: TextInputType.number,
                             validator: Validators.validateWeight),
+                        const SizedBox(height: 24),
                         const SizedBox(height: 24),
                         SubmitButton(
                             icon: Icons.send,

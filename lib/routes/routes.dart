@@ -4,7 +4,10 @@ import 'package:zero_waste/screens/binManagement/create_bin_screen.dart';
 import 'package:zero_waste/screens/garbageCollection/record_garage_entry_user_screen.dart';
 import 'package:zero_waste/screens/garbageCollection/user_history_screen.dart';
 import 'package:zero_waste/screens/home_screen.dart';
+import 'package:zero_waste/screens/rewardingSystem/item_dashboard.dart';
+import 'package:zero_waste/screens/rewardingSystem/manage_points.dart';
 import 'package:zero_waste/screens/rewardingSystem/manage_rewards_screen.dart';
+import 'package:zero_waste/screens/rewardingSystem/rewards_gift.dart';
 import 'package:zero_waste/screens/userManagement/login_screen.dart';
 import 'package:zero_waste/screens/splash_screen.dart';
 import 'package:zero_waste/screens/userManagement/register_screen.dart';
@@ -39,6 +42,15 @@ class AppRouter {
       GoRoute(
           path: '/reward/manage',
           builder: (context, state) => const ManageRewardsScreen()),
+      GoRoute(
+          path: '/reward/points',
+          builder: (context, state) => const PointsCreateScreen()),
+      GoRoute(
+          path: '/reward/gifts',
+          builder: (context, state) => const RewardsGiftScreen()),
+      GoRoute(
+          path: '/reward/items',
+          builder: (context, state) => const AdminDashboard()),
     ],
   );
 }

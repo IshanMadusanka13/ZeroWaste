@@ -3,12 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Reward {
   final String userId;
   final int points;
-  final String prize;
 
   Reward({
     required this.userId,
     required this.points,
-    required this.prize,
   });
 
   factory Reward.fromFirestore(DocumentSnapshot doc) {
@@ -16,7 +14,6 @@ class Reward {
     return Reward(
       userId: data['userId'] ?? '',
       points: data['points'] ?? 0,
-      prize: data['prize'] ?? '',
     );
   }
 
@@ -24,7 +21,6 @@ class Reward {
     return {
       'userId': userId,
       'points': points,
-      'prize': prize,
     };
   }
 }

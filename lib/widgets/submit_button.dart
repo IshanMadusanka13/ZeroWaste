@@ -7,9 +7,9 @@ class SubmitButton extends StatelessWidget {
 
   SubmitButton(
       {super.key,
-        required this.icon,
-        required this.text,
-        required this.whenPressed});
+      required this.icon,
+      required this.text,
+      required this.whenPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +19,8 @@ class SubmitButton extends StatelessWidget {
       label: Text(text),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.green,
-        foregroundColor:
-        Colors.white,
-        padding: const EdgeInsets.symmetric(
-            horizontal: 30, vertical: 15),
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
         ),

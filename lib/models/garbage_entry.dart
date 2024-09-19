@@ -10,6 +10,7 @@ class GarbageEntry {
   final double metelWeight;
   final double eWasteWeight;
   final DateTime date;
+  final double totalPoints;
 
   GarbageEntry({
     this.id = '',
@@ -21,8 +22,8 @@ class GarbageEntry {
     required this.metelWeight,
     required this.eWasteWeight,
     required this.date,
+    required this.totalPoints,
   });
-
   Map<String, dynamic> toMap() {
     return {
       'userId': userId,
@@ -33,6 +34,7 @@ class GarbageEntry {
       'metelWeight': metelWeight,
       'eWasteWeight': eWasteWeight,
       'date': date,
+      'totalPoints': totalPoints,
     };
   }
 
@@ -48,7 +50,7 @@ class GarbageEntry {
       metelWeight: data['metelWeight']?.toDouble() ?? 0.0,
       eWasteWeight: data['eWasteWeight']?.toDouble() ?? 0.0,
       date: (data['date'] as Timestamp).toDate(),
+      totalPoints: data['totalPoints']?.toDouble() ?? 0.0,
     );
   }
-
 }

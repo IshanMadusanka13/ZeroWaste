@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:zero_waste/models/garbage_entry.dart';
 import 'package:zero_waste/repositories/garbage_entry_repository.dart';
+import 'package:zero_waste/repositories/rewards_repository.dart';
 import 'package:zero_waste/screens/garbageCollection/edit_entry_screen.dart';
 
 class UserHistoryScreen extends StatefulWidget {
@@ -243,6 +244,7 @@ class _UserHistoryScreenState extends State<UserHistoryScreen> {
 
   void _deleteEntry(String entryId) async {
     await GarbageEntryRepository().deleteEntry(entryId).then((_) {
+      RewardsRepository().recalculateTotalRewards();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Entry deleted successfully!'),
