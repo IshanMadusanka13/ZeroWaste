@@ -15,7 +15,7 @@ class WasteBinRepository {
 
   Future<void> updateBin(String binId, WasteBin wasteBin) async {
     try {
-      await _binCollection.doc(binId).update(wasteBin.toMap());
+      await _binCollection.doc(wasteBin.id).update(wasteBin.toMap());
     } catch (e) {
       throw Exception('Error updating WasteBin: $e');
     }

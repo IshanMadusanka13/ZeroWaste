@@ -182,6 +182,7 @@ class _CreateBinScreenState extends State<CreateBinScreen> {
 
       WasteBinRepository().addBin(wasteBin).then((_) {
         ScaffoldMessenger.of(context).showSnackBar(
+          
             const SnackBar(content: Text('WasteBin added successfully!')));
         context.go("/home");
       }).catchError((error) {
