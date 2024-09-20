@@ -8,7 +8,7 @@ class ManageRewardsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    RewardsRepository().recalculateTotalRewards();
+    //RewardsRepository().recalculateTotalRewards();
 
     return Scaffold(
       appBar: AppBar(

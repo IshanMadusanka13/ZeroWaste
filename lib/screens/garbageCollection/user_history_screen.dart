@@ -244,7 +244,7 @@ class _UserHistoryScreenState extends State<UserHistoryScreen> {
 
   void _deleteEntry(String entryId) async {
     await GarbageEntryRepository().deleteEntry(entryId).then((_) {
-      RewardsRepository().recalculateTotalRewards();
+      //RewardsRepository().recalculateTotalRewards();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Entry deleted successfully!'),

@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:zero_waste/models/garbage_entry.dart';
+import 'package:zero_waste/models/points.dart';
 import 'package:zero_waste/repositories/garbage_entry_repository.dart';
+import 'package:zero_waste/repositories/points_repository.dart';
 import 'package:zero_waste/repositories/rewards_repository.dart';
 import 'package:zero_waste/widgets/submit_button.dart';
 
@@ -22,6 +24,7 @@ class _EditEntryScreenState extends State<EditEntryScreen> {
   late TextEditingController organicController;
   late TextEditingController metalController;
   late TextEditingController ewasteController;
+  double _totalPoints = 0.0;
 
   @override
   void initState() {
@@ -51,7 +54,42 @@ class _EditEntryScreenState extends State<EditEntryScreen> {
     super.dispose();
   }
 
-  void _updateEntry(BuildContext context) {
+  Future<double> _calculatePoints() async {
+    final PointsRepository pointsRepository = PointsRepository();
+    Points? points;
+    try {
+      points = await pointsRepository.getPointDetails();
+    } catch (e) {
+      print('Error fetching point details: $e');
+      return 0.0;
+    }
+
+    if (points == null) {
+      return 0.0;
+    }
+
+    double plasticPoints = (double.tryParse(plasticController.text) ?? 0) *
+        points.plasticPointsPerKg;
+    double glassPoints =
+        (double.tryParse(glassController.text) ?? 0) * points.glassPointsPerKg;
+    double paperPoints =
+        (double.tryParse(paperController.text) ?? 0) * points.paperPointsPerKg;
+    double organicPoints = (double.tryParse(organicController.text) ?? 0) *
+        points.organicPointsPerKg;
+    double metalPoints =
+        (double.tryParse(metalController.text) ?? 0) * points.metalPointsPerKg;
+    double eWastePoints = (double.tryParse(ewasteController.text) ?? 0) *
+        points.eWastePointsPerKg;
+
+    return plasticPoints +
+        glassPoints +
+        paperPoints +
+        organicPoints +
+        metalPoints +
+        eWastePoints;
+  }
+
+  Future<void> _updateEntry(BuildContext context) async {
     double plasticWeight = double.tryParse(plasticController.text) ?? 0;
     double glassWeight = double.tryParse(glassController.text) ?? 0;
     double paperWeight = double.tryParse(paperController.text) ?? 0;
@@ -74,6 +112,13 @@ class _EditEntryScreenState extends State<EditEntryScreen> {
       return;
     }
 
+    // Get the previous total points from the existing entry
+    double previousPoints = widget.entry.totalPoints;
+
+    // Calculate the new total points
+    double newTotalPoints = await _calculatePoints();
+
+    // Create the updated garbage entry
     final garbageEntry = GarbageEntry(
         userId: widget.entry.userId,
         plasticWeight: plasticWeight,
@@ -83,19 +128,24 @@ class _EditEntryScreenState extends State<EditEntryScreen> {
         metelWeight: metalWeight,
         eWasteWeight: ewasteWeight,
         date: widget.entry.date,
-        totalPoints: 0);
+        totalPoints: newTotalPoints);
 
+    // Update the garbage entry in the database
     GarbageEntryRepository()
         .updateEntry(widget.entry.id, garbageEntry)
-        .then((_) {
+        .then((_) async {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Entry updated successfully!'),
           backgroundColor: Colors.green,
         ),
       );
-      RewardsRepository().recalculateTotalRewards();
 
+      // Call the method to update the reward points based on the points difference
+      await RewardsRepository().updateRewardPointsBasedOnGarbageEntry(
+          widget.entry.userId, previousPoints, newTotalPoints);
+
+      // Navigate back after a delay
       Future.delayed(const Duration(seconds: 2), () {
         context.go("/collection/history");
       });

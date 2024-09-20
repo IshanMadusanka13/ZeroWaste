@@ -104,8 +104,8 @@ class _RecordGarbageEntryScreenState extends State<RecordGarbageEntryScreen> {
       );
 
       await GarbageEntryRepository().addEntry(entry);
-
-      await RewardsRepository().updateRewardsFromGarbageEntries();
+      await RewardsRepository()
+          .updateRewardsForUser(entry.userId, _totalPoints);
 
       await _generateAndDownloadPDF(entry);
 

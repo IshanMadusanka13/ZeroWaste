@@ -8,80 +8,94 @@ class RewardsRepository {
   final CollectionReference _garbageEntriesCollection =
       FirebaseFirestore.instance.collection('garbageEntries');
 
-  /// This method updates rewards by calculating the total points from garbage entries for each user
-  Future<void> updateRewardsFromGarbageEntries() async {
+  Future<void> updateRewardsForUser(String userId, double pointsToAdd) async {
     try {
-      // Fetch all garbage entries
-      QuerySnapshot garbageEntries = await _garbageEntriesCollection.get();
+      DocumentSnapshot rewardDoc = await _rewardsCollection.doc(userId).get();
 
-      // Iterate over all garbage entries
-      for (QueryDocumentSnapshot doc in garbageEntries.docs) {
-        GarbageEntry entry = GarbageEntry.fromFirestore(doc);
-
-        // Fetch the corresponding reward document for the user
-        DocumentSnapshot rewardDoc =
-            await _rewardsCollection.doc(entry.userId).get();
-
-        if (rewardDoc.exists) {
-          // If a reward exists for the user, update their points
-          Reward existingReward = Reward.fromFirestore(rewardDoc);
-          int updatedPoints = existingReward.points + entry.totalPoints.round();
-
-          await _rewardsCollection.doc(entry.userId).update({
-            'points': updatedPoints,
-          });
-        } else {
-          // If no reward exists for the user, create a new reward document
-          Reward newReward = Reward(
-            userId: entry.userId,
-            points: entry.totalPoints.round(),
-          );
-
-          await _rewardsCollection
-              .doc(entry.userId)
-              .set(newReward.toFirestore());
-        }
+      if (rewardDoc.exists) {
+        Reward existingReward = Reward.fromFirestore(rewardDoc);
+        int updatedPoints = existingReward.points + pointsToAdd.round();
+        await _rewardsCollection.doc(userId).update({'points': updatedPoints});
+      } else {
+        // Create a new reward document for the user
+        Reward newReward = Reward(userId: userId, points: pointsToAdd.round());
+        await _rewardsCollection.doc(userId).set(newReward.toFirestore());
       }
     } catch (e) {
       throw Exception('Error updating rewards: $e');
     }
   }
 
-  /// This method recalculates total points from garbage entries for each user in the rewards collection
-  Future<void> recalculateTotalRewards() async {
+  /// This method updates the rewards based on the difference between previous
+  /// and new garbage entry total points
+  Future<void> updateRewardPointsBasedOnGarbageEntry(
+      String userId, double previousPoints, double newPoints) async {
     try {
-      // Fetch all reward documents
-      QuerySnapshot rewardsSnapshot = await _rewardsCollection.get();
+      // Fetch the current reward document for the user
+      DocumentSnapshot rewardDoc = await _rewardsCollection.doc(userId).get();
 
-      // Iterate over each reward document to recalculate the points
-      for (QueryDocumentSnapshot rewardDoc in rewardsSnapshot.docs) {
-        String userId = rewardDoc.id;
+      if (rewardDoc.exists) {
+        Reward existingReward = Reward.fromFirestore(rewardDoc);
+        int currentRewardPoints = existingReward.points;
+        int pointsDifference = (newPoints - previousPoints).round();
 
-        // Fetch all garbage entries for the specific user
-        QuerySnapshot userGarbageEntries = await _garbageEntriesCollection
-            .where('userId', isEqualTo: userId)
-            .get();
+        // Update the reward points based on the points difference
+        if (pointsDifference != 0) {
+          int updatedPoints = currentRewardPoints + pointsDifference;
 
-        int totalPoints = 0;
+          if (updatedPoints < 0) updatedPoints = 0; // Ensure no negative points
 
-        // Calculate total points from all the user's garbage entries
-        for (QueryDocumentSnapshot entryDoc in userGarbageEntries.docs) {
-          GarbageEntry entry = GarbageEntry.fromFirestore(entryDoc);
-          totalPoints += entry.totalPoints.round();
-        }
-
-        if (totalPoints > 0) {
-          // Update the total points in the rewards collection if points are greater than 0
           await _rewardsCollection.doc(userId).update({
-            'points': totalPoints,
+            'points': updatedPoints,
           });
+
+          print('Reward points updated: $updatedPoints');
         } else {
-          // Delete the reward document if total points are 0
-          await _rewardsCollection.doc(userId).delete();
+          print('No change in reward points.');
         }
+      } else {
+        // If no reward exists, create a new one with the new points
+        await _rewardsCollection.doc(userId).set({
+          'points': newPoints.round(),
+        });
+
+        print('New reward created with points: ${newPoints.round()}');
       }
     } catch (e) {
-      throw Exception('Error recalculating rewards: $e');
+      throw Exception('Error updating reward points: $e');
+    }
+  }
+
+  /// This method updates the rewards when a garbage entry is deleted
+  Future<void> reduceRewardPointsOnDelete(
+      String userId, double deletedPoints) async {
+    try {
+      // Fetch the current reward document for the user
+      DocumentSnapshot rewardDoc = await _rewardsCollection.doc(userId).get();
+
+      if (rewardDoc.exists) {
+        Reward existingReward = Reward.fromFirestore(rewardDoc);
+        int currentRewardPoints = existingReward.points;
+
+        // Calculate the updated points after deleting the garbage entry
+        int updatedPoints = currentRewardPoints - deletedPoints.round();
+
+        if (updatedPoints > 0) {
+          // Update the reward document with the reduced points
+          await _rewardsCollection.doc(userId).update({
+            'points': updatedPoints,
+          });
+          print('Reward points reduced: $updatedPoints');
+        } else {
+          // If points drop to zero or below, delete the reward document
+          await _rewardsCollection.doc(userId).delete();
+          print('Reward deleted due to zero points.');
+        }
+      } else {
+        print('No reward found for user.');
+      }
+    } catch (e) {
+      throw Exception('Error reducing reward points: $e');
     }
   }
 }
