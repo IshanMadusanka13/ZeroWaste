@@ -2,16 +2,34 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:zero_waste/models/household_user.dart';
 import 'package:zero_waste/models/user.dart';
 import 'package:zero_waste/repositories/user_repository.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class HouseholdUserRepository {
   final CollectionReference _usersCollection =
       FirebaseFirestore.instance.collection('householdUser');
 
+  Future<String> generateUniqueId() async {
+    try {
+      QuerySnapshot snapshot = await _usersCollection.get();
+      int count = snapshot.size;
+      if (count == 0) {
+        return 'H0001';
+      } else {
+        count++;
+        String userId = 'H${count.toString().padLeft(4, '0')}';
+        return userId;
+      }
+    } catch (e) {
+      throw Exception('Error generating unique user ID: $e');
+    }
+  }
+
   Future<void> addUser(User user, HouseholdUser householdUser) async {
     try {
       DocumentReference userId = await UserRepository().addUser(user);
       householdUser.userId = userId.id;
-      await _usersCollection.add(householdUser.toMap());
+      householdUser.id = await generateUniqueId();
+      await _usersCollection.doc(householdUser.id).set(householdUser.toMap());
     } catch (e) {
       throw Exception('Error adding HouseholdUser: $e');
     }
@@ -58,7 +76,6 @@ class HouseholdUserRepository {
   }
 
   Future<HouseholdUser?> getHouseholdUserByUserId(String userId) async {
-    print(userId);
     try {
       QuerySnapshot querySnapshot =
           await _usersCollection.where('userId', isEqualTo: userId).get();

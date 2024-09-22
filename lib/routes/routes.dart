@@ -1,14 +1,20 @@
 import 'package:go_router/go_router.dart';
-import 'package:zero_waste/screens/binManagement/bin_view.dart';
+import 'package:zero_waste/screens/binManagement/assign_route.dart';
+import 'package:zero_waste/screens/binManagement/bin_view_screen.dart';
 import 'package:zero_waste/screens/binManagement/create_bin_screen.dart';
+import 'package:zero_waste/screens/binManagement/create_route_screen.dart';
 import 'package:zero_waste/screens/garbageCollection/record_garage_entry_user_screen.dart';
 import 'package:zero_waste/screens/garbageCollection/user_history_screen.dart';
 import 'package:zero_waste/screens/home_screen.dart';
 import 'package:zero_waste/screens/rewardingSystem/manage_rewards_screen.dart';
+import 'package:zero_waste/screens/userManagement/add_employee_screen.dart';
 import 'package:zero_waste/screens/userManagement/login_screen.dart';
 import 'package:zero_waste/screens/splash_screen.dart';
 import 'package:zero_waste/screens/userManagement/register_screen.dart';
-import 'package:zero_waste/screens/userManagement/user_profile.dart';
+import 'package:zero_waste/screens/userManagement/user_dashboard_screen.dart';
+import 'package:zero_waste/screens/userManagement/user_update_screen.dart';
+
+import '../models/user.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -22,11 +28,21 @@ class AppRouter {
       GoRoute(
           path: '/user/register',
           builder: (context, state) => const RegisterScreen()),
+      GoRoute(
+          path: '/user/update',
+          builder: (context, state) => const UserUpdateScreen()),
+      GoRoute(
+          path: '/employee/register',
+          builder: (context, state) => const AddEmployeeScreen()),
 
       //Bin Management Routes
-      GoRoute(path: '/bin/view', builder: (context, state) => const BinView()),
+      GoRoute(path: '/bin/view', builder: (context, state) => BinViewScreen(loginedUser: User(email: '', password: ''))),
       GoRoute(
           path: '/bin/create', builder: (context, state) => const CreateBinScreen()),
+      GoRoute(
+          path: '/route/create', builder: (context, state) => const CreateRouteScreen()),
+      GoRoute(
+          path: '/route/assign', builder: (context, state) => const AssignRoute()),
 
       //Garbage Collection Routes
       GoRoute(
@@ -43,7 +59,7 @@ class AppRouter {
 
       GoRoute(
           path: '/profile',
-          builder: (context, state) => const UserProfile()),
+          builder: (context, state) => const UserDashboardScreen()),
     ],
   );
 }

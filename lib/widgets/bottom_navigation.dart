@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 class BottomNavigation extends StatelessWidget {
-  const BottomNavigation({super.key});
+  final List<Widget> screens;
+  final List<PersistentBottomNavBarItem> items;
+
+  const BottomNavigation(
+      {super.key, required this.screens, required this.items});
 
   List<Widget> _navScreens() {
     return [

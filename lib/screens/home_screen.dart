@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:zero_waste/providers/user_provider.dart';
-import 'package:zero_waste/widgets/submit_button.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -66,6 +65,19 @@ class HomeScreen extends StatelessWidget {
                       text: 'Register',
                       icon: Icons.app_registration,
                       route: '/user/register',
+                    ),
+                    const SizedBox(height: 20),
+                    _buildDashboardButton(
+                      context: context,
+                      text: 'Route Create',
+                      icon: Icons.app_registration,
+                      route: '/route/create',
+                    ),
+                    _buildDashboardButton(
+                      context: context,
+                      text: 'Route Assign',
+                      icon: Icons.app_registration,
+                      route: '/route/assign',
                     ),
                     const SizedBox(height: 20),
                     _buildDashboardButton(

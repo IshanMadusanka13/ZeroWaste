@@ -1,19 +1,18 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_holo_date_picker/flutter_holo_date_picker.dart';
 
-class DatePicker extends StatelessWidget {
+class AppDatePicker extends StatefulWidget {
   final String title;
-  final ValueChanged<int?>? onChangedDay;
-  final ValueChanged<int?>? onChangedMonth;
-  final ValueChanged<int?>? onChangedYear;
+  final ValueChanged<DateTime?>? onChangedDate;
 
-  const DatePicker({
-    super.key,
-    required this.title,
-    this.onChangedDay,
-    this.onChangedMonth,
-    this.onChangedYear,
-  });
+  const AppDatePicker({super.key, required this.title, this.onChangedDate});
+
+  @override
+  State<AppDatePicker> createState() => _DatePickerState();
+}
+
+class _DatePickerState extends State<AppDatePicker> {
+  DateTime? selectedDate;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +27,7 @@ class DatePicker extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              title,
+              widget.title,
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -37,52 +36,38 @@ class DatePicker extends StatelessWidget {
             const SizedBox(height: 10),
             GestureDetector(
               onTap: () async {
-                DateTime? selectedDate = await showCupertinoModalPopup<DateTime>(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return Container(
-                      height: MediaQuery.of(context).size.height * 0.3,
-                      color: Colors.white,
-                      child: CupertinoDatePicker(
-                        mode: CupertinoDatePickerMode.date,
-                        initialDateTime:  DateTime(2000, 1, 1),
-                        onDateTimeChanged: (DateTime newDateTime) {
-                          if (onChangedDay != null) {
-                            onChangedDay!(newDateTime.day);
-                          }
-                          if (onChangedMonth != null) {
-                            onChangedMonth!(newDateTime.month);
-                          }
-                          if (onChangedYear != null) {
-                            onChangedYear!(newDateTime.year);
-                          }
-                        },
-                      ),
-                    );
-                  },
+                DateTime? datePicked = await DatePicker.showSimpleDatePicker(
+                  context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime(1880),
+                  lastDate: DateTime(2050),
+                  dateFormat: "dd-MMMM-yyyy",
+                  locale: DateTimePickerLocale.en_us,
+                  looping: true,
                 );
 
-                if (selectedDate != null) {
-                  if (onChangedDay != null) {
-                    onChangedDay!(selectedDate.day);
-                  }
-                  if (onChangedMonth != null) {
-                    onChangedMonth!(selectedDate.month);
-                  }
-                  if (onChangedYear != null) {
-                    onChangedYear!(selectedDate.year);
+                if (datePicked != null) {
+                  setState(() {
+                    selectedDate = datePicked;
+                  });
+                  if (widget.onChangedDate != null) {
+                    widget.onChangedDate!(selectedDate);
                   }
                 }
               },
               child: AbsorbPointer(
                 child: TextFormField(
                   decoration: InputDecoration(
-                    labelText: title,
-                    suffixIcon: const Icon(Icons.calendar_today, color: Colors.green),
+                    labelText: selectedDate != null
+                        ? selectedDate.toString()
+                        : widget.title,
+                    suffixIcon:
+                        const Icon(Icons.calendar_today, color: Colors.green),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 15),
                   ),
                 ),
               ),

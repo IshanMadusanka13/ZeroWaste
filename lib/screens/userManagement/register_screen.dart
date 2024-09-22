@@ -2,15 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import 'package:zero_waste/models/business_owner.dart';
 import 'package:zero_waste/models/household_user.dart';
 import 'package:zero_waste/models/user.dart';
-import 'package:zero_waste/providers/user_provider.dart';
 import 'package:zero_waste/repositories/business_owner_repository.dart';
 import 'package:zero_waste/repositories/household_user_repository.dart';
+import 'package:zero_waste/utils/user_types.dart';
 import 'package:zero_waste/utils/validators.dart';
 import 'package:zero_waste/widgets/date_picker.dart';
+import 'package:zero_waste/widgets/dialog_messages.dart';
 import 'package:zero_waste/widgets/select_dropdown.dart';
 import 'package:zero_waste/widgets/text_field_input.dart';
 import '../../widgets/submit_button.dart';
@@ -123,14 +123,10 @@ class _RegisterScreenState extends State<RegisterScreen>
                         inputType: TextInputType.text,
                         validator: Validators.nullCheck),
                     const SizedBox(height: 16),
-                    DatePicker(
+                    AppDatePicker(
                       title: "Date Of Birth",
-                      onChangedDay: (value) =>
-                          dob = DateTime(dob.year, dob.month, value!),
-                      onChangedMonth: (value) =>
-                          dob = DateTime(dob.year, value!, dob.day),
-                      onChangedYear: (value) =>
-                          dob = DateTime(value!, dob.month, dob.day),
+                      onChangedDate: (value) =>
+                          dob = value!,
                     ),
                     const SizedBox(height: 16),
                     TextFieldInput(
@@ -336,52 +332,25 @@ class _RegisterScreenState extends State<RegisterScreen>
       final user = User(
         email: _emailController.text,
         password: _passwordController.text,
-        userType: 'HouseholdUser',
+        userType: UserTypes.HOUSEHOLD_USER,
       );
       final householdUser = HouseholdUser(
+        id: '',
         fName: _fnameController.text,
         lName: _lnameController.text,
         dob: dob,
         nic: _nicController.text,
         mobile: _mobileNoController.text,
         address: _addressController.text,
+        households: _noOfHouseholds!,
         userId: '',
       );
       HouseholdUserRepository().addUser(user, householdUser).then((_) {
-        showCupertinoDialog(
-          context: context,
-          builder: (context) {
-            return CupertinoAlertDialog(
-              title: const Text('User Registered Successfully'),
-              actions: <Widget>[
-                CupertinoDialogAction(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    context.go("/home");
-                  },
-                ),
-              ],
-            );
-          },
-        );
+        okMessageDialog(
+            context, "Success!", "HouseholdUser Registered Successfully");
+        context.go('/user/login');
       }).catchError((error, stack) {
-        showCupertinoDialog(
-          context: context,
-          builder: (context) {
-            return CupertinoAlertDialog(
-              title: const Text('Failed to Register Household User'),
-              content: Text(error.toString()),
-              actions: <Widget>[
-                CupertinoDialogAction(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    context.go("/home");
-                  },
-                ),
-              ],
-            );
-          },
-        );
+        okMessageDialog(context, "Failed!", error.toString());
       });
     }
   }
@@ -401,40 +370,10 @@ class _RegisterScreenState extends State<RegisterScreen>
         userId: '',
       );
       BusinessOwnerRepository().addBusinessUser(user, businessOwner).then((_) {
-        showCupertinoDialog(
-          context: context,
-          builder: (context) {
-            return CupertinoAlertDialog(
-              title: const Text('User Registered Successfully'),
-              actions: <Widget>[
-                CupertinoDialogAction(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    context.go("/home");
-                  },
-                ),
-              ],
-            );
-          },
-        );
+        okMessageDialog(
+            context, "Success!", "Business User Registred Successfully");
       }).catchError((error, stack) {
-        showCupertinoDialog(
-          context: context,
-          builder: (context) {
-            return CupertinoAlertDialog(
-              title: const Text('Failed to Register Business User'),
-              content: Text(error.toString()),
-              actions: <Widget>[
-                CupertinoDialogAction(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    context.go("/home");
-                  },
-                ),
-              ],
-            );
-          },
-        );
+        okMessageDialog(context, "Failed!", error.toString());
       });
     }
   }

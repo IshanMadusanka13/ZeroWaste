@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
@@ -10,15 +8,21 @@ import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 import 'package:zero_waste/models/waste_bin.dart';
 import 'package:zero_waste/repositories/waste_bin_repository.dart';
 import 'package:zero_waste/utils/custom_bins_icons.dart';
+import 'package:zero_waste/widgets/dialog_messages.dart';
 
-class BinView extends StatefulWidget {
-  const BinView({super.key});
+import '../../models/household_user.dart';
+import '../../models/user.dart';
+
+class BinViewScreen extends StatefulWidget {
+  final User loginedUser;
+
+  const BinViewScreen({super.key, required this.loginedUser});
 
   @override
-  State<BinView> createState() => _BinViewState();
+  State<BinViewScreen> createState() => _BinViewScreenState();
 }
 
-class _BinViewState extends State<BinView> {
+class _BinViewScreenState extends State<BinViewScreen> {
   late MapController controller;
   late List<WasteBin> bins;
   late WasteBin selectedBin;
@@ -36,43 +40,19 @@ class _BinViewState extends State<BinView> {
     loadBins();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    controller.listenerMapLongTapping.addListener(() async {
-      print('Long Press $updateStatus');
-      if (updateStatus) {
-        if (controller.listenerMapLongTapping.value != null) {
-          createPin(controller.listenerMapLongTapping.value!);
-        }
-      }
+  void getCurrentLocation(GeoPoint geoPoint) {
+    controller.myLocation().then((location) {
+      controller.removeLastRoad().then((_) {
+        _drawRoad(location, geoPoint);
+      }).catchError((error) {
+        print('Error Clearing Roads: $error');
+        _drawRoad(GeoPoint(latitude: 5.5, longitude: 5.5), geoPoint);
+      });
+      _drawRoad(location, geoPoint);
+    }).catchError((error) {
+      print('Error fetching location: $error');
+      _drawRoad(GeoPoint(latitude: 5.5, longitude: 5.5), geoPoint);
     });
-
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Bin View'),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              context.go("/home");
-            },
-          ),
-        ),
-        body: OSMFlutter(
-          onGeoPointClicked: _onGeoPointClicked,
-          controller: controller,
-          osmOption: const OSMOption(
-            userTrackingOption: UserTrackingOption(
-              enableTracking: true,
-              unFollowUser: false,
-            ),
-            zoomOption: ZoomOption(
-              initZoom: 14,
-              minZoomLevel: 3,
-              maxZoomLevel: 19,
-              stepZoom: 1.0,
-            ),
-          ),
-        ));
   }
 
   void _onGeoPointClicked(GeoPoint geoPoint) {
@@ -110,6 +90,43 @@ class _BinViewState extends State<BinView> {
             iconColor: Colors.white,
           ),
         ]);
+  }
+
+  void _drawRoad(GeoPoint start, GeoPoint end) {
+    for (WasteBin bin in bins) {
+      if (bin.latitude == end.latitude && bin.longitude == end.longitude) {
+        selectedBin = bin;
+      }
+    }
+    controller
+        .drawRoad(
+      start,
+      end,
+      roadType: RoadType.foot,
+      roadOption: const RoadOption(
+        roadWidth: 10,
+        roadColor: Colors.blue,
+        zoomInto: true,
+      ),
+    )
+        .then((roadInfo) {
+      Dialogs.bottomMaterialDialog(
+          msg:
+              '${roadInfo.distance}km From Current Location and it Takes ${roadInfo.duration}sec to go by walk',
+          title: '${selectedBin.binType} Bin',
+          context: context,
+          actions: [
+            IconsOutlineButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              text: 'Ok',
+              iconData: Icons.location_pin,
+              textStyle: const TextStyle(color: Colors.grey),
+              iconColor: Colors.grey,
+            ),
+          ]);
+    }).catchError((error) {});
   }
 
   Future<void> createPin(GeoPoint location) async {
@@ -186,77 +203,57 @@ class _BinViewState extends State<BinView> {
     newBin.latitude = location.latitude;
 
     WasteBinRepository().updateBin(selectedBin).then((_) {
-      showCupertinoDialog(
-        context: context,
-        builder: (context) {
-          return CupertinoAlertDialog(
-            title: const Text('Successfully to Updated WasteBin'),
-            actions: <Widget>[
-              CupertinoDialogAction(
-                child: const Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  context.go("/home");
-                },
-              ),
-            ],
-          );
-        },
-      );
+      okMessageDialog(context, "Success!", "Waste Bin Updated Successfully");
     }).catchError((error) {
-      showCupertinoDialog(
-        context: context,
-        builder: (context) {
-          return CupertinoAlertDialog(
-            title: const Text('Failed to Update WasteBin'),
-            actions: <Widget>[
-              CupertinoDialogAction(
-                child: const Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
+      okMessageDialog(context, "Failed!", error.toString());
     });
   }
 
   void deleteBin(WasteBin bin) {
     WasteBinRepository().deleteBin(bin.id).then((_) {
-      showCupertinoDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return CupertinoAlertDialog(
-              title: const Text('WasteBin Deleted'),
-              actions: <Widget>[
-                CupertinoDialogAction(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    context.go("/home");
-                  },
-                ),
-              ],
-            );
-          });
+      okMessageDialog(context, "Success!", "Waste Bin Deleted Successfully");
     }).catchError((error) {
-      showCupertinoDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return CupertinoAlertDialog(
-              title: const Text('Failed to Delete WasteBin'),
-              actions: <Widget>[
-                CupertinoDialogAction(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          });
+      okMessageDialog(context, "Failed!", error.toString());
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    controller.listenerMapLongTapping.addListener(() async {
+      if (updateStatus) {
+        if (controller.listenerMapLongTapping.value != null) {
+          createPin(controller.listenerMapLongTapping.value!);
+        }
+      }
+    });
+
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('Bin View'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              context.go("/profile");
+            },
+          ),
+        ),
+        body: OSMFlutter(
+          onGeoPointClicked: (widget.loginedUser.userType == "HouseholdUser")
+              ? getCurrentLocation
+              : _onGeoPointClicked,
+          controller: controller,
+          osmOption: const OSMOption(
+            userTrackingOption: UserTrackingOption(
+              enableTracking: true,
+              unFollowUser: false,
+            ),
+            zoomOption: ZoomOption(
+              initZoom: 14,
+              minZoomLevel: 3,
+              maxZoomLevel: 19,
+              stepZoom: 1.0,
+            ),
+          ),
+        ));
   }
 }

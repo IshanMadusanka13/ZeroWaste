@@ -50,4 +50,15 @@ class WasteBinRepository {
       throw Exception('Error getting WasteBin: $e');
     }
   }
+
+  Future<List<WasteBin>> getBinByRouteId(String routeId) async {
+    try {
+      final schedules =
+          await _binCollection.where('routeId', isEqualTo: routeId).get();
+
+      return schedules.docs.map((doc) => WasteBin.fromDocument(doc)).toList();
+    } catch (e) {
+      throw Exception('Error getting WasteBin: $e');
+    }
+  }
 }
