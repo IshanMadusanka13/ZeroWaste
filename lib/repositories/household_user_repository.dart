@@ -1,13 +1,35 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:zero_waste/models/household_user.dart';
+import 'package:zero_waste/models/user.dart';
+import 'package:zero_waste/repositories/user_repository.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class HouseholdUserRepository {
   final CollectionReference _usersCollection =
-  FirebaseFirestore.instance.collection('householdUser');
+      FirebaseFirestore.instance.collection('householdUser');
 
-  Future<void> addUser(HouseholdUser user) async {
+  Future<String> generateUniqueId() async {
     try {
-      await _usersCollection.add(user.toMap());
+      QuerySnapshot snapshot = await _usersCollection.get();
+      int count = snapshot.size;
+      if (count == 0) {
+        return 'H0001';
+      } else {
+        count++;
+        String userId = 'H${count.toString().padLeft(4, '0')}';
+        return userId;
+      }
+    } catch (e) {
+      throw Exception('Error generating unique user ID: $e');
+    }
+  }
+
+  Future<void> addUser(User user, HouseholdUser householdUser) async {
+    try {
+      DocumentReference userId = await UserRepository().addUser(user);
+      householdUser.userId = userId.id;
+      householdUser.id = await generateUniqueId();
+      await _usersCollection.doc(householdUser.id).set(householdUser.toMap());
     } catch (e) {
       throw Exception('Error adding HouseholdUser: $e');
     }
@@ -32,7 +54,9 @@ class HouseholdUserRepository {
   Future<List<HouseholdUser>> getAllUsers() async {
     try {
       QuerySnapshot snapshot = await _usersCollection.get();
-      return snapshot.docs.map((doc) => HouseholdUser.fromDocument(doc)).toList();
+      return snapshot.docs
+          .map((doc) => HouseholdUser.fromDocument(doc))
+          .toList();
     } catch (e) {
       throw Exception('Error getting all HouseholdUser: $e');
     }
@@ -51,4 +75,20 @@ class HouseholdUserRepository {
     }
   }
 
+  Future<HouseholdUser?> getHouseholdUserByUserId(String userId) async {
+    try {
+      QuerySnapshot querySnapshot =
+          await _usersCollection.where('userId', isEqualTo: userId).get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        DocumentSnapshot doc = querySnapshot.docs.first;
+        return HouseholdUser.fromDocument(doc);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Error getting HouseholdUser by email: $e');
+      return null;
+    }
+  }
 }

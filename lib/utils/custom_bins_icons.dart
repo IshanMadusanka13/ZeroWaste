@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class CustomBins {
@@ -6,39 +7,59 @@ class CustomBins {
   static const _kFontFam = 'CustomBins';
   static const String? _kFontPkg = null;
 
-  static const IconData metalbin =
-      IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData organicwaste =
-      IconData(0xe801, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData paperbin =
-      IconData(0xe802, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData plasticbin =
+  static const IconData wasteBin =
       IconData(0xe803, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData woodbin =
-      IconData(0xe804, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData batterybin =
-      IconData(0xe805, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData medicalwaste =
-      IconData(0xe806, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 
-  static IconData getBinIcon(String binType) {
+  static Icon getBinIcon(String binType) {
     switch (binType) {
       case 'Plastic':
-        return CustomBins.plasticbin;
+        return const Icon(
+          wasteBin,
+          color: Colors.blue,
+          size: 56,
+        );
       case 'Metal':
-        return CustomBins.metalbin;
+        return const Icon(
+          wasteBin,
+          color: Colors.grey,
+          size: 56,
+        );
       case 'Paper':
-        return CustomBins.paperbin;
+        return const Icon(
+          wasteBin,
+          color: Colors.yellow,
+          size: 56,
+        );
       case 'Organic':
-        return CustomBins.organicwaste;
+        return const Icon(
+          wasteBin,
+          color: Colors.green,
+          size: 56,
+        );
       case 'Wood':
-        return CustomBins.woodbin;
-      case 'Battery':
-        return CustomBins.batterybin;
+        return const Icon(
+          wasteBin,
+          color: Colors.brown,
+          size: 56,
+        );
       case 'Medical':
-        return CustomBins.medicalwaste;
+        return const Icon(
+          wasteBin,
+          color: Colors.purple,
+          size: 56,
+        );
+      case 'E-waste':
+        return const Icon(
+          wasteBin,
+          color: Colors.orange,
+          size: 56,
+        );
       default:
-        return CustomBins.plasticbin;
+        return const Icon(
+          wasteBin,
+          color: Colors.blueGrey,
+          size: 56,
+        );
     }
   }
 }

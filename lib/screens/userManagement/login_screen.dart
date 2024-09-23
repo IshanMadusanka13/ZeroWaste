@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:zero_waste/models/user.dart';
 import 'package:zero_waste/providers/user_provider.dart';
 import 'package:zero_waste/utils/validators.dart';
+import 'package:zero_waste/widgets/dialog_messages.dart';
 import 'package:zero_waste/widgets/submit_button.dart';
 import 'package:zero_waste/widgets/text_field_input.dart';
 
@@ -85,6 +87,21 @@ class _LoginScreenState extends State<LoginScreen> {
                         icon: Icons.send,
                         text: "Login",
                         whenPressed: _submitForm),
+                    const SizedBox(height: 10),
+                    RichText(
+                        text: TextSpan(children: [
+                          TextSpan(
+                              text: "Dont have an account?",
+                              style: Theme.of(context).textTheme.bodyMedium),
+                          TextSpan(
+                              text: "Register",
+                              style: const TextStyle(
+                                  fontSize: 15, color: Colors.orangeAccent),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  context.go("/user/register");
+                                })
+                        ]))
                   ],
                 ),
               ),
@@ -103,27 +120,10 @@ class _LoginScreenState extends State<LoginScreen> {
         userType: 'HouseholdUser',
       );
       Provider.of<UserProvider>(context, listen: false).login(user).then((_) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('Login success!')));
-        context.go("/home");
+        bottomMessage(context, 'Login Success!');
+        context.go("/profile");
       }).catchError((error, stack) {
-        showCupertinoDialog(
-          context: context,
-          builder: (context) {
-            return CupertinoAlertDialog(
-              title: const Text('Login Failed'),
-              content: Text(error.toString()),
-              actions: <Widget>[
-                CupertinoDialogAction(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
+        okMessageDialog(context, 'Login Failed', error.toString());
       });
     }
   }

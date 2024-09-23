@@ -1,9 +1,11 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
+import 'package:zero_waste/models/collection_route.dart';
 import 'package:zero_waste/models/waste_bin.dart';
+import 'package:zero_waste/repositories/collection_route_repository.dart';
 import 'package:zero_waste/repositories/waste_bin_repository.dart';
-
+import 'package:zero_waste/widgets/dialog_messages.dart';
 import '../../widgets/select_dropdown.dart';
 
 class CreateBinScreen extends StatefulWidget {
@@ -16,6 +18,9 @@ class CreateBinScreen extends StatefulWidget {
 class _CreateBinScreenState extends State<CreateBinScreen> {
   late MapController controller;
   final _formKey = GlobalKey<FormState>();
+  List<String> routeList = [];
+  late List<CollectionRoute> allRoutes;
+  String? _collectionRoute;
   String? _binType;
   GeoPoint? _binLocation;
 
@@ -27,6 +32,7 @@ class _CreateBinScreenState extends State<CreateBinScreen> {
       enableTracking: true,
       unFollowUser: false,
     ));
+    loadRoutes();
   }
 
   @override
@@ -49,7 +55,7 @@ class _CreateBinScreenState extends State<CreateBinScreen> {
         child: Column(
           children: [
             Container(
-              height: MediaQuery.of(context).size.height * 0.2,
+              height: MediaQuery.of(context).size.height * 0.15,
               width: double.infinity,
               decoration: const BoxDecoration(
                   image: DecorationImage(
@@ -59,29 +65,59 @@ class _CreateBinScreenState extends State<CreateBinScreen> {
                   borderRadius: BorderRadius.only(
                       bottomLeft: Radius.elliptical(50, 30),
                       bottomRight: Radius.elliptical(50, 30))),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Row(
                 children: [
-                  Text(
-                    "Create Bin",
-                    style: TextStyle(
-                      fontSize: 40,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back),
+                        onPressed: () {
+                          context.go("/profile");
+                        },
+                      )
+                    ],
+                  ),
+                  const Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Create Bin",
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      )
+                    ],
                   )
                 ],
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 5),
             Form(
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(5),
+                    child: SelectDropdown(
+                        title: "Route",
+                        items: routeList,
+                        selectedValue: _collectionRoute,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _collectionRoute = newValue;
+                          });
+                          drawRoute();
+                        },
+                        hint: "Select Route"),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(5),
                     child: SelectDropdown(
                         title: "Bin Type",
                         items: const [
@@ -90,6 +126,7 @@ class _CreateBinScreenState extends State<CreateBinScreen> {
                           'Glass',
                           'Paper',
                           'Metal',
+                          'E-waste',
                         ],
                         selectedValue: _binType,
                         onChanged: (String? newValue) {
@@ -100,14 +137,15 @@ class _CreateBinScreenState extends State<CreateBinScreen> {
                         hint: "Select Item"),
                   ),
                   const Padding(
-                    padding: EdgeInsets.all(8.0),
+                    padding: EdgeInsets.all(5),
                     child: Text(
                       "Select Bin Location",
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                   ),
                   SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.4,
+                    height: MediaQuery.of(context).size.height * 0.3,
                     child: OSMFlutter(
                       controller: controller,
                       osmOption: const OSMOption(
@@ -123,9 +161,9 @@ class _CreateBinScreenState extends State<CreateBinScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 35),
+            const SizedBox(height: 10),
             Container(
-              margin: const EdgeInsets.fromLTRB(40, 5, 20, 20),
+              margin: const EdgeInsets.fromLTRB(40, 5, 20, 0),
               width: double.infinity,
               decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.primary,
@@ -175,18 +213,63 @@ class _CreateBinScreenState extends State<CreateBinScreen> {
   void _submitForm(BuildContext context) {
     if (_formKey.currentState!.validate()) {
       final wasteBin = WasteBin(
+          routeId: _collectionRoute!.split(' -')[0],
           binType: _binType!,
           longitude: _binLocation!.longitude,
           latitude: _binLocation!.latitude);
 
       WasteBinRepository().addBin(wasteBin).then((_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('WasteBin added successfully!')));
-        context.go("/home");
+        okMessageDialog(context, 'Created!', 'Waste Bin Created Successfully');
+        context.go("/profile");
       }).catchError((error) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to add WasteBin')));
+        okMessageDialog(context, 'Failed!', error.toString());
       });
     }
+  }
+
+  void loadRoutes() {
+    CollectionRouteRepository().getAllRoutes().then((collectionRoutes) {
+      CollectionRoute route;
+      List<String> routes = [];
+      for (route in collectionRoutes) {
+        String routeName =
+            '${route.id} - ${route.startLocation} to ${route.endLocation}';
+        routes.add(routeName);
+      }
+      setState(() {
+        routeList = routes;
+        allRoutes = collectionRoutes;
+      });
+    }).catchError((error) {
+      okMessageDialog(context, 'Failed!', error.toString());
+    });
+  }
+
+  void drawRoute() {
+    CollectionRoute? selectedRoute;
+    String routeId = _collectionRoute!.split(' -')[0];
+    print(routeId);
+    for (selectedRoute in allRoutes) {
+      if (selectedRoute.id == routeId) {
+        break;
+      }
+    }
+    controller
+        .drawRoad(
+          GeoPoint(
+              latitude: selectedRoute!.startLatitude,
+              longitude: selectedRoute.startLongitude),
+          GeoPoint(
+              latitude: selectedRoute.endLatitude,
+              longitude: selectedRoute.endLongitude),
+          roadType: RoadType.foot,
+          roadOption: const RoadOption(
+            roadWidth: 10,
+            roadColor: Colors.blue,
+            zoomInto: true,
+          ),
+        )
+        .then((roadInfo) {})
+        .catchError((error) {});
   }
 }

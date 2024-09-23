@@ -13,9 +13,9 @@ class WasteBinRepository {
     }
   }
 
-  Future<void> updateBin(String binId, WasteBin wasteBin) async {
+  Future<void> updateBin(WasteBin wasteBin) async {
     try {
-      await _binCollection.doc(binId).update(wasteBin.toMap());
+      await _binCollection.doc(wasteBin.id).update(wasteBin.toMap());
     } catch (e) {
       throw Exception('Error updating WasteBin: $e');
     }
@@ -46,6 +46,17 @@ class WasteBinRepository {
       } else {
         throw Exception('WasteBin not found');
       }
+    } catch (e) {
+      throw Exception('Error getting WasteBin: $e');
+    }
+  }
+
+  Future<List<WasteBin>> getBinByRouteId(String routeId) async {
+    try {
+      final schedules =
+          await _binCollection.where('routeId', isEqualTo: routeId).get();
+
+      return schedules.docs.map((doc) => WasteBin.fromDocument(doc)).toList();
     } catch (e) {
       throw Exception('Error getting WasteBin: $e');
     }

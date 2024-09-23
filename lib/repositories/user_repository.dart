@@ -5,9 +5,10 @@ class UserRepository {
   final CollectionReference _usersCollection =
   FirebaseFirestore.instance.collection('users');
 
-  Future<void> addUser(User user) async {
+  Future<DocumentReference<Object?>> addUser(User user) async {
     try {
-      await _usersCollection.add(user.toMap());
+      DocumentReference userRef = await _usersCollection.add(user.toMap());
+      return userRef;
     } catch (e) {
       throw Exception('Error adding user: $e');
     }
