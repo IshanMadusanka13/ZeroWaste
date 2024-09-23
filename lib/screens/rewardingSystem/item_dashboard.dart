@@ -7,7 +7,7 @@ import 'package:zero_waste/repositories/reward_item_repository.dart';
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
   @override
-  _AdminDashboardState createState() => _AdminDashboardState();
+  State<AdminDashboard> createState() => _AdminDashboardState();
 }
 
 class _AdminDashboardState extends State<AdminDashboard> {
@@ -43,20 +43,20 @@ class _AdminDashboardState extends State<AdminDashboard> {
             children: [
               TextField(
                 controller: _nameController,
-                decoration: InputDecoration(labelText: 'Name'),
+                decoration: const InputDecoration(labelText: 'Name'),
               ),
               TextField(
                 controller: _pointsController,
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(labelText: 'Points'),
+                decoration: const InputDecoration(labelText: 'Points'),
               ),
               TextField(
                 controller: _imageController,
-                decoration: InputDecoration(labelText: 'Image URL'),
+                decoration: const InputDecoration(labelText: 'Image URL'),
               ),
               TextField(
                 controller: _descriptionController,
-                decoration: InputDecoration(labelText: 'Description'),
+                decoration: const InputDecoration(labelText: 'Description'),
               ),
             ],
           ),
@@ -65,7 +65,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () async {
@@ -112,20 +112,19 @@ class _AdminDashboardState extends State<AdminDashboard> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.go('/home'),
-          // Navigate back to the previous page
         ),
-        title: Center(
+        title: const Center(
           child: Text(
             'Admin Dashboard',
             style: TextStyle(
-              fontWeight: FontWeight.bold, // Bold text
-              color: Colors.white, // White text color
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
           ),
         ),
-        backgroundColor: Colors.green[800], // Background color
+        backgroundColor: Colors.green[800],
       ),
       body: StreamBuilder<List<RewardItem>>(
         stream: _repository.getItems(),
@@ -134,7 +133,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
 
           final items = snapshot.data ?? [];
@@ -151,11 +150,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.edit),
+                      icon: const Icon(Icons.edit),
                       onPressed: () => _showItemDialog(item: item),
                     ),
                     IconButton(
-                      icon: Icon(Icons.delete),
+                      icon: const Icon(Icons.delete),
                       onPressed: () => _deleteItem(item.id),
                     ),
                   ],
@@ -167,8 +166,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showItemDialog(),
-        child: Icon(Icons.add),
         backgroundColor: Colors.green[800],
+        child: const Icon(Icons.add),
       ),
     );
   }

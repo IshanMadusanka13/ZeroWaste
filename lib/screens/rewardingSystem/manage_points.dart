@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:zero_waste/repositories/points_repository.dart';
 import 'package:zero_waste/models/points.dart';
-import 'package:zero_waste/widgets/text_field_input.dart'; // Assuming you have custom TextField widget
-import 'package:zero_waste/widgets/submit_button.dart'; // Assuming you have custom Button widget
+import 'package:zero_waste/widgets/text_field_input.dart';
+import 'package:zero_waste/widgets/submit_button.dart';
 
 class PointsCreateScreen extends StatefulWidget {
   const PointsCreateScreen({super.key});
+
   @override
-  _PointsCreatePageState createState() => _PointsCreatePageState();
+  State<PointsCreateScreen> createState() => _PointsCreatePageState();
 }
 
 class _PointsCreatePageState extends State<PointsCreateScreen> {
@@ -76,13 +77,13 @@ class _PointsCreatePageState extends State<PointsCreateScreen> {
         if (_isCreatingNew) {
           await PointsRepository().createPoints(points);
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Points created successfully')),
+            const SnackBar(content: Text('Points created successfully')),
           );
           _clearInputFields();
         } else {
           await PointsRepository().updatePoints(points);
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Points updated successfully')),
+            const SnackBar(content: Text('Points updated successfully')),
           );
           _clearInputFields();
         }
@@ -97,9 +98,9 @@ class _PointsCreatePageState extends State<PointsCreateScreen> {
   void _resetPoints() async {
     try {
       await PointsRepository().resetPoints();
-      _clearInputFields(); // Clear the input fields after resetting
+      _clearInputFields();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Points reset to zero')),
+        const SnackBar(content: Text('Points reset to zero')),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -119,7 +120,7 @@ class _PointsCreatePageState extends State<PointsCreateScreen> {
 
   String? _validatePositiveNumber(String? value) {
     if (value == null || value.isEmpty) {
-      return null; // Allow empty values
+      return null;
     }
     final number = double.tryParse(value);
     if (number == null || number < -1) {
@@ -131,141 +132,136 @@ class _PointsCreatePageState extends State<PointsCreateScreen> {
   @override
   void initState() {
     super.initState();
-    _loadPoints(); // Load points data when the page is initialized
+    _loadPoints();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_isDataLoaded) {
-      return Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
-
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Colors.green.shade200, Colors.blue.shade200],
-          ),
-        ),
-        child: SafeArea(
-          child: CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                expandedHeight: 40.0, // Adjust height as needed
-                backgroundColor: Colors.green,
-                floating: false,
-                pinned: true,
-                flexibleSpace: FlexibleSpaceBar(
-                  titlePadding: EdgeInsets.zero, // Remove default title padding
-                  background: Container(
-                    color: Colors.green, // Background color for the app bar
-                  ),
-                  // Stack to center the title
-                  title: Stack(
-                    children: [
-                      Align(
-                        alignment: Alignment
-                            .center, // Center the title horizontally and vertically
-                        child: Text(
-                          'Update Points Details',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20.0,
+      body: !_isDataLoaded
+          ? const Center(child: CircularProgressIndicator())
+          : Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Colors.green.shade200, Colors.blue.shade200],
+                ),
+              ),
+              child: SafeArea(
+                child: CustomScrollView(
+                  slivers: [
+                    SliverAppBar(
+                      expandedHeight: 40.0,
+                      backgroundColor: Colors.green,
+                      floating: false,
+                      pinned: true,
+                      flexibleSpace: FlexibleSpaceBar(
+                        titlePadding: EdgeInsets.zero,
+                        background: Container(
+                          color: Colors.green,
+                        ),
+                        title: const Stack(
+                          children: [
+                            Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                'Update Points Details',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20.0,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      leading: IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
+                        onPressed: () {
+                          context.go('/home');
+                        },
+                      ),
+                    ),
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TextFieldInput(
+                                icon: Icons.recycling,
+                                title: "Plastic Points per Kg",
+                                controller: _plasticPointsController,
+                                inputType: TextInputType.number,
+                                validator: _validatePositiveNumber,
+                              ),
+                              const SizedBox(height: 16),
+                              TextFieldInput(
+                                icon: Icons.grass,
+                                title: "Glass Points per Kg",
+                                controller: _glassPointsController,
+                                inputType: TextInputType.number,
+                                validator: _validatePositiveNumber,
+                              ),
+                              const SizedBox(height: 16),
+                              TextFieldInput(
+                                icon: Icons.article,
+                                title: "Paper Points per Kg",
+                                controller: _paperPointsController,
+                                inputType: TextInputType.number,
+                                validator: _validatePositiveNumber,
+                              ),
+                              const SizedBox(height: 16),
+                              TextFieldInput(
+                                icon: Icons.eco,
+                                title: "Organic Points per Kg",
+                                controller: _organicPointsController,
+                                inputType: TextInputType.number,
+                                validator: _validatePositiveNumber,
+                              ),
+                              const SizedBox(height: 16),
+                              TextFieldInput(
+                                icon: Icons.build,
+                                title: "Metal Points per Kg",
+                                controller: _metalPointsController,
+                                inputType: TextInputType.number,
+                                validator: _validatePositiveNumber,
+                              ),
+                              const SizedBox(height: 16),
+                              TextFieldInput(
+                                icon: Icons.memory,
+                                title: "e-Waste Points per Kg",
+                                controller: _eWastePointsController,
+                                inputType: TextInputType.number,
+                                validator: _validatePositiveNumber,
+                              ),
+                              const SizedBox(height: 24),
+                              SubmitButton(
+                                icon: Icons.save,
+                                text: _isCreatingNew
+                                    ? 'Save Points'
+                                    : 'Update Points',
+                                whenPressed: (context) => _submitForm(),
+                              ),
+                              const SizedBox(height: 16),
+                              SubmitButton(
+                                icon: Icons.refresh,
+                                text: 'Reset Points',
+                                whenPressed: (context) => _resetPoints(),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                leading: IconButton(
-                  icon: Icon(Icons.arrow_back, color: Colors.white),
-                  onPressed: () {
-                    context.go('/home');
-                  },
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        TextFieldInput(
-                          icon: Icons.recycling,
-                          title: "Plastic Points per Kg",
-                          controller: _plasticPointsController,
-                          inputType: TextInputType.number,
-                          validator: _validatePositiveNumber,
-                        ),
-                        const SizedBox(height: 16),
-                        TextFieldInput(
-                          icon: Icons.grass,
-                          title: "Glass Points per Kg",
-                          controller: _glassPointsController,
-                          inputType: TextInputType.number,
-                          validator: _validatePositiveNumber,
-                        ),
-                        const SizedBox(height: 16),
-                        TextFieldInput(
-                          icon: Icons.article,
-                          title: "Paper Points per Kg",
-                          controller: _paperPointsController,
-                          inputType: TextInputType.number,
-                          validator: _validatePositiveNumber,
-                        ),
-                        const SizedBox(height: 16),
-                        TextFieldInput(
-                          icon: Icons.eco,
-                          title: "Organic Points per Kg",
-                          controller: _organicPointsController,
-                          inputType: TextInputType.number,
-                          validator: _validatePositiveNumber,
-                        ),
-                        const SizedBox(height: 16),
-                        TextFieldInput(
-                          icon: Icons.build,
-                          title: "Metal Points per Kg",
-                          controller: _metalPointsController,
-                          inputType: TextInputType.number,
-                          validator: _validatePositiveNumber,
-                        ),
-                        const SizedBox(height: 16),
-                        TextFieldInput(
-                          icon: Icons.memory,
-                          title: "e-Waste Points per Kg",
-                          controller: _eWastePointsController,
-                          inputType: TextInputType.number,
-                          validator: _validatePositiveNumber,
-                        ),
-                        const SizedBox(height: 24),
-                        SubmitButton(
-                          icon: Icons.save,
-                          text:
-                              _isCreatingNew ? 'Save Points' : 'Update Points',
-                          whenPressed: (context) => _submitForm(),
-                        ),
-                        const SizedBox(height: 16),
-                        SubmitButton(
-                          icon: Icons.refresh,
-                          text: 'Reset Points',
-                          whenPressed: (context) => _resetPoints(),
-                        ),
-                      ],
                     ),
-                  ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }

@@ -7,7 +7,7 @@ class GarbageEntry {
   final double glassWeight;
   final double paperWeight;
   final double organicWeight;
-  final double metelWeight;
+  final double metalWeight;
   final double eWasteWeight;
   final DateTime date;
   final double totalPoints;
@@ -19,11 +19,12 @@ class GarbageEntry {
     required this.glassWeight,
     required this.paperWeight,
     required this.organicWeight,
-    required this.metelWeight,
+    required this.metalWeight,
     required this.eWasteWeight,
     required this.date,
     required this.totalPoints,
   });
+  
   Map<String, dynamic> toMap() {
     return {
       'userId': userId,
@@ -31,15 +32,15 @@ class GarbageEntry {
       'glassWeight': glassWeight,
       'paperWeight': paperWeight,
       'organicWeight': organicWeight,
-      'metelWeight': metelWeight,
+      'metalWeight': metalWeight,
       'eWasteWeight': eWasteWeight,
       'date': date,
       'totalPoints': totalPoints,
     };
   }
 
-  factory GarbageEntry.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+  factory GarbageEntry.fromDocument(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
     return GarbageEntry(
       id: doc.id,
       userId: data['userId'] ?? '',
@@ -47,7 +48,7 @@ class GarbageEntry {
       glassWeight: data['glassWeight']?.toDouble() ?? 0.0,
       paperWeight: data['paperWeight']?.toDouble() ?? 0.0,
       organicWeight: data['organicWeight']?.toDouble() ?? 0.0,
-      metelWeight: data['metelWeight']?.toDouble() ?? 0.0,
+      metalWeight: data['metalWeight']?.toDouble() ?? 0.0,
       eWasteWeight: data['eWasteWeight']?.toDouble() ?? 0.0,
       date: (data['date'] as Timestamp).toDate(),
       totalPoints: data['totalPoints']?.toDouble() ?? 0.0,

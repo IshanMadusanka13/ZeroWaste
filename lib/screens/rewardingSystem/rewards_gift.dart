@@ -9,7 +9,7 @@ class RewardsGiftScreen extends StatefulWidget {
   const RewardsGiftScreen({super.key});
 
   @override
-  _RewardsGiftScreenState createState() => _RewardsGiftScreenState();
+  State<RewardsGiftScreen> createState() => _RewardsGiftScreenState();
 }
 
 class _RewardsGiftScreenState extends State<RewardsGiftScreen> {
@@ -39,10 +39,10 @@ class _RewardsGiftScreenState extends State<RewardsGiftScreen> {
           ),
           content: Text(
               'Are you sure you want to buy ${item.name} for ${item.points} points?',
-              style: TextStyle(color: Colors.black)),
+              style: const TextStyle(color: Colors.black)),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel', style: TextStyle(color: Colors.red)),
+              child: const Text('Cancel', style: TextStyle(color: Colors.red)),
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },
@@ -61,12 +61,12 @@ class _RewardsGiftScreenState extends State<RewardsGiftScreen> {
                           ? 'Successfully purchased ${item.name}!'
                           : 'Not enough points to buy ${item.name}.'),
                       backgroundColor: success ? Colors.green : Colors.red,
-                      duration: Duration(seconds: 3),
+                      duration: const Duration(seconds: 3),
                     ),
                   );
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
+                    const SnackBar(
                       content: Text('Error occurred while purchasing.'),
                       backgroundColor: Colors.red,
                       duration: Duration(seconds: 3),
@@ -86,10 +86,10 @@ class _RewardsGiftScreenState extends State<RewardsGiftScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.go('/home'),
         ),
-        title: Text(
+        title: const Text(
           'Rewards Gift Shop',
           style: TextStyle(
             color: Colors.white,
@@ -108,10 +108,10 @@ class _RewardsGiftScreenState extends State<RewardsGiftScreen> {
                 return Center(child: Text('Error: ${snapshot.error}'));
               }
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               }
               if (!snapshot.hasData || !snapshot.data!.exists) {
-                return Center(child: Text('No rewards data available'));
+                return const Center(child: Text('No rewards data available'));
               }
 
               final rewardData = snapshot.data!.data() as Map<String, dynamic>;
@@ -138,14 +138,14 @@ class _RewardsGiftScreenState extends State<RewardsGiftScreen> {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 }
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
 
                 final items = snapshot.data ?? [];
 
                 return GridView.builder(
-                  padding: EdgeInsets.all(16),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  padding: const EdgeInsets.all(16),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     childAspectRatio: 0.8,
                     crossAxisSpacing: 10,
@@ -164,7 +164,7 @@ class _RewardsGiftScreenState extends State<RewardsGiftScreen> {
                         children: [
                           Expanded(
                             child: ClipRRect(
-                              borderRadius: BorderRadius.vertical(
+                              borderRadius: const BorderRadius.vertical(
                                   top: Radius.circular(15)),
                               child: Image.network(
                                 item.image,
@@ -185,25 +185,25 @@ class _RewardsGiftScreenState extends State<RewardsGiftScreen> {
                                     color: Colors.green[800],
                                   ),
                                 ),
-                                SizedBox(height: 4),
+                                const SizedBox(height: 4),
                                 Text(
                                   '${item.points} points',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 14,
                                     color: Colors.black54,
                                   ),
                                 ),
-                                SizedBox(height: 8),
+                                const SizedBox(height: 8),
                                 Text(
                                   item.description,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 12,
                                     color: Colors.black54,
                                     height: 1.4,
                                   ),
                                   textAlign: TextAlign.left,
                                 ),
-                                SizedBox(height: 8),
+                                const SizedBox(height: 8),
                                 ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.green[800],
@@ -212,7 +212,7 @@ class _RewardsGiftScreenState extends State<RewardsGiftScreen> {
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                   ),
-                                  child: Text('Buy'),
+                                  child: const Text('Buy'),
                                   onPressed: () => _buyItem(context, item),
                                 ),
                               ],

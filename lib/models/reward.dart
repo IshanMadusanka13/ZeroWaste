@@ -9,15 +9,15 @@ class Reward {
     required this.points,
   });
 
-  factory Reward.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+  factory Reward.fromDocument(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
     return Reward(
       userId: data['userId'] ?? '',
       points: data['points'] ?? 0,
     );
   }
 
-  Map<String, dynamic> toFirestore() {
+  Map<String, dynamic> toMap() {
     return {
       'userId': userId,
       'points': points,

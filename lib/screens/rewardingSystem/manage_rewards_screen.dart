@@ -1,14 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:zero_waste/models/reward.dart';
-import 'package:zero_waste/repositories/rewards_repository.dart';
 
 class ManageRewardsScreen extends StatelessWidget {
   const ManageRewardsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    //RewardsRepository().recalculateTotalRewards();
 
     return Scaffold(
       appBar: AppBar(
@@ -25,7 +23,7 @@ class ManageRewardsScreen extends StatelessWidget {
           }
 
           var rewards = snapshot.data!.docs
-              .map((doc) => Reward.fromFirestore(doc))
+              .map((doc) => Reward.fromDocument(doc))
               .toList();
 
           return ListView.builder(

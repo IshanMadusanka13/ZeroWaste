@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:zero_waste/models/garbage_entry.dart';
@@ -14,7 +13,7 @@ class EditEntryScreen extends StatefulWidget {
   const EditEntryScreen({super.key, required this.entry});
 
   @override
-  _EditEntryScreenState createState() => _EditEntryScreenState();
+  State<EditEntryScreen> createState() => _EditEntryScreenState();
 }
 
 class _EditEntryScreenState extends State<EditEntryScreen> {
@@ -24,7 +23,6 @@ class _EditEntryScreenState extends State<EditEntryScreen> {
   late TextEditingController organicController;
   late TextEditingController metalController;
   late TextEditingController ewasteController;
-  double _totalPoints = 0.0;
 
   @override
   void initState() {
@@ -38,7 +36,7 @@ class _EditEntryScreenState extends State<EditEntryScreen> {
     organicController =
         TextEditingController(text: widget.entry.organicWeight.toString());
     metalController =
-        TextEditingController(text: widget.entry.metelWeight.toString());
+        TextEditingController(text: widget.entry.metalWeight.toString());
     ewasteController =
         TextEditingController(text: widget.entry.eWasteWeight.toString());
   }
@@ -112,25 +110,20 @@ class _EditEntryScreenState extends State<EditEntryScreen> {
       return;
     }
 
-    // Get the previous total points from the existing entry
     double previousPoints = widget.entry.totalPoints;
-
-    // Calculate the new total points
     double newTotalPoints = await _calculatePoints();
 
-    // Create the updated garbage entry
     final garbageEntry = GarbageEntry(
         userId: widget.entry.userId,
         plasticWeight: plasticWeight,
         glassWeight: glassWeight,
         paperWeight: paperWeight,
         organicWeight: organicWeight,
-        metelWeight: metalWeight,
+        metalWeight: metalWeight,
         eWasteWeight: ewasteWeight,
         date: widget.entry.date,
         totalPoints: newTotalPoints);
 
-    // Update the garbage entry in the database
     GarbageEntryRepository()
         .updateEntry(widget.entry.id, garbageEntry)
         .then((_) async {
@@ -141,11 +134,9 @@ class _EditEntryScreenState extends State<EditEntryScreen> {
         ),
       );
 
-      // Call the method to update the reward points based on the points difference
-      await RewardsRepository().updateRewardPointsBasedOnGarbageEntry(
+       await RewardsRepository().updateRewardPointsBasedOnGarbageEntry(
           widget.entry.userId, previousPoints, newTotalPoints);
 
-      // Navigate back after a delay
       Future.delayed(const Duration(seconds: 2), () {
         context.go("/collection/history");
       });

@@ -20,7 +20,7 @@ class RecordGarbageEntryScreen extends StatefulWidget {
   const RecordGarbageEntryScreen({super.key});
 
   @override
-  _RecordGarbageEntryScreenState createState() =>
+  State<RecordGarbageEntryScreen> createState() =>
       _RecordGarbageEntryScreenState();
 }
 
@@ -31,11 +31,10 @@ class _RecordGarbageEntryScreenState extends State<RecordGarbageEntryScreen> {
   final _glassWeight = TextEditingController();
   final _paperWeight = TextEditingController();
   final _organicWeight = TextEditingController();
-  final _metelWeight = TextEditingController();
+  final _metalWeight = TextEditingController();
   final _eWasteWeight = TextEditingController();
   double _totalPoints = 0.0;
 
-  // Method to calculate points
   Future<double> _calculatePoints() async {
     final PointsRepository pointsRepository = PointsRepository();
     Points? points;
@@ -59,7 +58,7 @@ class _RecordGarbageEntryScreenState extends State<RecordGarbageEntryScreen> {
     double organicPoints =
         (double.tryParse(_organicWeight.text) ?? 0) * points.organicPointsPerKg;
     double metalPoints =
-        (double.tryParse(_metelWeight.text) ?? 0) * points.metalPointsPerKg;
+        (double.tryParse(_metalWeight.text) ?? 0) * points.metalPointsPerKg;
     double eWastePoints =
         (double.tryParse(_eWasteWeight.text) ?? 0) * points.eWastePointsPerKg;
 
@@ -79,7 +78,7 @@ class _RecordGarbageEntryScreenState extends State<RecordGarbageEntryScreen> {
               (double.tryParse(_glassWeight.text) ?? 0) +
               (double.tryParse(_paperWeight.text) ?? 0) +
               (double.tryParse(_organicWeight.text) ?? 0) +
-              (double.tryParse(_metelWeight.text) ?? 0) +
+              (double.tryParse(_metalWeight.text) ?? 0) +
               (double.tryParse(_eWasteWeight.text) ?? 0) ==
           0) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -89,7 +88,7 @@ class _RecordGarbageEntryScreenState extends State<RecordGarbageEntryScreen> {
         return;
       }
 
-      _totalPoints = await _calculatePoints(); // Calculate the total points
+      _totalPoints = await _calculatePoints();
 
       GarbageEntry entry = GarbageEntry(
         userId: _userId.text,
@@ -97,7 +96,7 @@ class _RecordGarbageEntryScreenState extends State<RecordGarbageEntryScreen> {
         glassWeight: double.tryParse(_glassWeight.text) ?? 0.0,
         paperWeight: double.tryParse(_paperWeight.text) ?? 0.0,
         organicWeight: double.tryParse(_organicWeight.text) ?? 0.0,
-        metelWeight: double.tryParse(_metelWeight.text) ?? 0.0,
+        metalWeight: double.tryParse(_metalWeight.text) ?? 0.0,
         eWasteWeight: double.tryParse(_eWasteWeight.text) ?? 0.0,
         date: DateTime.now(),
         totalPoints: _totalPoints,
@@ -151,7 +150,7 @@ class _RecordGarbageEntryScreenState extends State<RecordGarbageEntryScreen> {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              // Header Section
+
               pw.Container(
                 padding: const pw.EdgeInsets.all(10),
                 decoration: const pw.BoxDecoration(
@@ -191,7 +190,6 @@ class _RecordGarbageEntryScreenState extends State<RecordGarbageEntryScreen> {
               ),
               pw.SizedBox(height: 10),
 
-              // Table to organize data
               pw.Table(
                 border: pw.TableBorder.all(width: 2, color: PdfColors.green300),
                 columnWidths: {
@@ -205,18 +203,17 @@ class _RecordGarbageEntryScreenState extends State<RecordGarbageEntryScreen> {
                   buildTableRow('Glass Weight:', '${entry.glassWeight} kg'),
                   buildTableRow('Paper Weight:', '${entry.paperWeight} kg'),
                   buildTableRow('Organic Weight:', '${entry.organicWeight} kg'),
-                  buildTableRow('Metal Weight:', '${entry.metelWeight} kg'),
+                  buildTableRow('Metal Weight:', '${entry.metalWeight} kg'),
                   buildTableRow('e-Waste Weight:', '${entry.eWasteWeight} kg'),
                   buildTableRow(
                     'Total Weight:',
-                    '${entry.plasticWeight + entry.glassWeight + entry.paperWeight + entry.organicWeight + entry.metelWeight + entry.eWasteWeight} kg',
+                    '${entry.plasticWeight + entry.glassWeight + entry.paperWeight + entry.organicWeight + entry.metalWeight + entry.eWasteWeight} kg',
                   ),
                   buildTableRow('Total Points:', '${entry.totalPoints} points'),
                 ],
               ),
               pw.SizedBox(height: 20),
 
-              // Footer Section
               pw.Container(
                 alignment: pw.Alignment.centerRight,
                 padding: const pw.EdgeInsets.all(10),
@@ -261,18 +258,18 @@ class _RecordGarbageEntryScreenState extends State<RecordGarbageEntryScreen> {
                 leading: IconButton(
                   icon: const Icon(Icons.arrow_back, color: Colors.green),
                   onPressed: () {
-                    context.go('/home'); // Use GoRouter to navigate
+                    context.go('/home');
                   },
                 ),
                 flexibleSpace: FlexibleSpaceBar(
                   titlePadding: const EdgeInsets.only(
-                      left: 120.0, bottom: 155.0), // Moves the text upwards
+                      left: 120.0, bottom: 155.0),
                   title: const Text(
                     'Record Garbage',
                     style: TextStyle(
-                      color: Colors.green, // Sets the text color to white
-                      fontWeight: FontWeight.bold, // Makes the text bold
-                      fontSize: 20.0, // Adjusts the font size
+                      color: Colors.green,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.0,
                     ),
                   ),
                   background: Image.asset(
@@ -326,7 +323,7 @@ class _RecordGarbageEntryScreenState extends State<RecordGarbageEntryScreen> {
                         TextFieldInput(
                             icon: Icons.home_repair_service,
                             title: "Metal (kg)",
-                            controller: _metelWeight,
+                            controller: _metalWeight,
                             inputType: TextInputType.number,
                             validator: Validators.validateWeight),
                         const SizedBox(height: 16),

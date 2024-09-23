@@ -11,7 +11,7 @@ class UserHistoryScreen extends StatefulWidget {
   const UserHistoryScreen({super.key});
 
   @override
-  _UserHistoryScreenState createState() => _UserHistoryScreenState();
+  State<UserHistoryScreen> createState() => _UserHistoryScreenState();
 }
 
 class _UserHistoryScreenState extends State<UserHistoryScreen> {
@@ -66,9 +66,9 @@ class _UserHistoryScreenState extends State<UserHistoryScreen> {
           }
 
           var entries = snapshot.data!.docs
-              .map((doc) => GarbageEntry.fromFirestore(doc))
+              .map((doc) => GarbageEntry.fromDocument(doc))
               .where((entry) =>
-                  entry.userId.contains(_searchTerm)) // Search condition
+                  entry.userId.contains(_searchTerm))
               .toList();
 
           if (entries.isEmpty) {
@@ -129,7 +129,7 @@ class _UserHistoryScreenState extends State<UserHistoryScreen> {
                             _buildWasteInfo(
                                 icon: Icons.home_repair_service,
                                 label: 'Metal',
-                                value: entry.metelWeight),
+                                value: entry.metalWeight),
                             _buildWasteInfo(
                                 icon: Icons.memory,
                                 label: 'E-Waste',
@@ -213,7 +213,7 @@ class _UserHistoryScreenState extends State<UserHistoryScreen> {
     );
   }
 
-  // Function to show a confirmation dialog for deletion
+
   void _showDeleteConfirmation(BuildContext context, String entryId) {
     showDialog(
       context: context,
@@ -223,13 +223,13 @@ class _UserHistoryScreenState extends State<UserHistoryScreen> {
           content: const Text('Are you sure you want to delete this entry?'),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context), // Cancel
+              onPressed: () => Navigator.pop(context),
               child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
                 _deleteEntry(entryId);
-                Navigator.pop(context); // Close dialog after deletion
+                Navigator.pop(context);
               },
               child: const Text(
                 'Delete',
@@ -244,7 +244,6 @@ class _UserHistoryScreenState extends State<UserHistoryScreen> {
 
   void _deleteEntry(String entryId) async {
     await GarbageEntryRepository().deleteEntry(entryId).then((_) {
-      //RewardsRepository().recalculateTotalRewards();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Entry deleted successfully!'),

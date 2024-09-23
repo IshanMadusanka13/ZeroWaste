@@ -2,12 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:zero_waste/models/points.dart';
 
 class PointsRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final CollectionReference _pointsCollection =
+      FirebaseFirestore.instance.collection('points');
 
   Future<Points?> getPointDetails() async {
     try {
-      DocumentSnapshot doc =
-          await _firestore.collection('points').doc('current').get();
+      DocumentSnapshot doc = await _pointsCollection.doc('current').get();
       if (doc.exists) {
         return Points.fromDocument(doc);
       }
@@ -19,7 +19,7 @@ class PointsRepository {
 
   Future<void> createPoints(Points points) async {
     try {
-      await _firestore.collection('points').doc('current').set(points.toMap());
+      await _pointsCollection.doc('current').set(points.toMap());
     } catch (e) {
       throw Exception('Error creating points details: $e');
     }
@@ -27,10 +27,7 @@ class PointsRepository {
 
   Future<void> updatePoints(Points points) async {
     try {
-      await _firestore
-          .collection('points')
-          .doc('current')
-          .update(points.toMap());
+      await _pointsCollection.doc('current').update(points.toMap());
     } catch (e) {
       throw Exception('Error updating points details: $e');
     }
@@ -38,7 +35,7 @@ class PointsRepository {
 
   Future<void> resetPoints() async {
     try {
-      await _firestore.collection('points').doc('current').set({
+      await _pointsCollection.doc('current').set({
         'plasticPointsPerKg': 0.0,
         'glassPointsPerKg': 0.0,
         'paperPointsPerKg': 0.0,

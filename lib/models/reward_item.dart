@@ -15,7 +15,7 @@ class RewardItem {
     required this.description,
   });
 
-  factory RewardItem.fromFirestore(DocumentSnapshot doc) {
+  factory RewardItem.fromDocument(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return RewardItem(
       id: doc.id,

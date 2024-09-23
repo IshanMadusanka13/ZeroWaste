@@ -15,7 +15,7 @@ class GifsRepository {
           return false;
         }
 
-        Reward reward = Reward.fromFirestore(rewardDoc);
+        Reward reward = Reward.fromDocument(rewardDoc);
 
         if (reward.points < itemPoints) {
           return false;
@@ -37,6 +37,6 @@ class GifsRepository {
         .collection('rewards')
         .doc(userId)
         .snapshots()
-        .map((snapshot) => Reward.fromFirestore(snapshot));
+        .map((snapshot) => Reward.fromDocument(snapshot));
   }
 }
