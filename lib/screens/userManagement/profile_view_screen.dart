@@ -170,10 +170,28 @@ class ProfileViewScreen extends StatelessWidget {
               ),
               _buildProfileOption(
                 context: context,
-                icon: Icons.add_road_outlined,
+                icon: Icons.schedule_outlined,
                 text: 'Schedule Route',
                 onTap: () => context.go('/route/assign'),
-              )
+              ),
+              _buildProfileOption(
+                context: context,
+                icon: Icons.history,
+                text: 'User Garbage History',
+                onTap: () => context.go('/collection/history'),
+              ),
+              _buildProfileOption(
+                context: context,
+                icon: Icons.control_point_duplicate_outlined,
+                text: 'Update Point Allocation',
+                onTap: () => context.go('/reward/gifts'),
+              ),
+              _buildProfileOption(
+                context: context,
+                icon: Icons.card_giftcard,
+                text: 'Reward Items',
+                onTap: () => context.go('/reward/items'),
+              ),
             ],
           );
         case UserTypes.TRUCK_DRIVER:

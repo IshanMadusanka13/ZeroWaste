@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:zero_waste/models/collection_route.dart';
 import 'package:zero_waste/repositories/collection_route_repository.dart';
+import 'package:zero_waste/utils/helpers.dart';
 import 'package:zero_waste/utils/validators.dart';
 import 'package:zero_waste/widgets/dialog_messages.dart';
 import 'package:zero_waste/widgets/text_field_input.dart';
@@ -271,7 +272,7 @@ class _CreateRouteScreenState extends State<CreateRouteScreen> {
               setState(() {
                 distance =
                     double.parse((roadInfo.distance)!.toStringAsFixed(2));
-                timeTaken = _formatTime(roadInfo.duration!.toInt());
+                timeTaken = Helpers.formatTime(roadInfo.duration!.toInt());
               });
             }).catchError((error) {
               okMessageDialog(context, 'Failed!', 'Error drawing road: $error');
@@ -290,11 +291,4 @@ class _CreateRouteScreenState extends State<CreateRouteScreen> {
     }
   }
 
-  String _formatTime(int seconds) {
-    int hours = seconds ~/ 3600;
-    int minutes = (seconds % 3600) ~/ 60;
-    int secondsRemaining = seconds % 60;
-
-    return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${secondsRemaining.toString().padLeft(2, '0')}';
-  }
 }

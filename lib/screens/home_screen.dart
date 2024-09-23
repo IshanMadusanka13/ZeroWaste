@@ -62,9 +62,6 @@ class HomeScreen extends StatelessWidget {
                     const SizedBox(height: 20),
                     _buildDashboardButton(
                       context: context,
-                      text: 'Register',
-                      icon: Icons.app_registration,
-                      route: '/user/register',
                       text: 'Record Garbage Entry',
                       icon: Icons.add_circle_outline,
                       route: '/collection/entry',

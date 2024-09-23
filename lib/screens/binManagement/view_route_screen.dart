@@ -10,6 +10,7 @@ import 'package:zero_waste/repositories/employee_repository.dart';
 import 'package:zero_waste/repositories/route_schedule_repository.dart';
 import 'package:zero_waste/repositories/waste_bin_repository.dart';
 import 'package:zero_waste/utils/custom_bins_icons.dart';
+import 'package:zero_waste/utils/helpers.dart';
 import 'package:zero_waste/utils/user_types.dart';
 import 'package:zero_waste/widgets/dialog_messages.dart';
 import 'package:zero_waste/widgets/select_dropdown.dart';
@@ -33,6 +34,7 @@ class _ViewRouteScreenState extends State<ViewRouteScreen> {
   late Employee driver;
   String? selectedDate;
   RouteSchedule? selectedSchedule;
+  RoadInfo? roadDetails;
 
   @override
   void initState() {
@@ -90,7 +92,7 @@ class _ViewRouteScreenState extends State<ViewRouteScreen> {
     await loadBins(selectedSchedule!.routeId);
     CollectionRoute route =
         await CollectionRouteRepository().getRoute(selectedSchedule.routeId);
-    await controller.drawRoad(
+    RoadInfo details = await controller.drawRoad(
         GeoPoint(
             latitude: route.startLatitude, longitude: route.startLongitude),
         GeoPoint(latitude: route.endLatitude, longitude: route.endLongitude),
@@ -101,6 +103,9 @@ class _ViewRouteScreenState extends State<ViewRouteScreen> {
           zoomInto: true,
         ),
         intersectPoint: binLocations);
+    setState(() {
+      roadDetails = details;
+    });
   }
 
   Future<void> loadBins(String routeId) async {
@@ -155,7 +160,11 @@ class _ViewRouteScreenState extends State<ViewRouteScreen> {
                       Text(
                         'Route : ${selectedSchedule!.routeId}',
                         style: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                            fontSize: 24, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        'Distance : ${roadDetails!.distance}Km \n Time Estimated : ${Helpers.formatTime(roadDetails!.duration!.toInt())}',
+                        style: const TextStyle(fontSize: 20),
                       ),
                       SizedBox(
                         height: MediaQuery.of(context).size.height * 0.55,

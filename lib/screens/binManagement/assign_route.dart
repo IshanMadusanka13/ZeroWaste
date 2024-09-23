@@ -143,7 +143,6 @@ class _AssignRouteState extends State<AssignRoute> {
   }
 
   void loadDrivers() {
-    print('Load driverrrs-------------------');
     EmployeeRepository().getAllEmployees().then((employees) {
       Employee employee;
       List<String> employeeStringList = [];
