@@ -69,26 +69,6 @@ class HomeScreen extends StatelessWidget {
                     const SizedBox(height: 20),
                     _buildDashboardButton(
                       context: context,
-                      text: 'Route Create',
-                      icon: Icons.app_registration,
-                      route: '/route/create',
-                    ),
-                    _buildDashboardButton(
-                      context: context,
-                      text: 'Route Assign',
-                      icon: Icons.app_registration,
-                      route: '/route/assign',
-                    ),
-                    const SizedBox(height: 20),
-                    _buildDashboardButton(
-                      context: context,
-                      text: 'Manage Rewards',
-                      icon: Icons.card_giftcard,
-                      route: '/reward/manage',
-                    ),
-                    const SizedBox(height: 20),
-                    _buildDashboardButton(
-                      context: context,
                       text: 'User History',
                       icon: Icons.history,
                       route: '/collection/history',

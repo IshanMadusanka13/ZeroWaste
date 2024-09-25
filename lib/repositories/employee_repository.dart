@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:zero_waste/models/employee.dart';
 import 'package:zero_waste/models/user.dart';
 import 'package:zero_waste/repositories/user_repository.dart';
+import 'package:zero_waste/utils/app_logger.dart';
 
 class EmployeeRepository {
   final CollectionReference _employeeCollection =
@@ -29,23 +30,41 @@ class EmployeeRepository {
       employee.userId = userId.id;
       employee.id = await generateUniqueId();
       await _employeeCollection.doc(employee.id).set(employee.toMap());
+      AppLogger.printInfo('Employee Added successfully.');
     } catch (e) {
+      AppLogger.printError(e.toString());
       throw Exception('Error adding Employee: $e');
     }
   }
 
   Future<void> updateEmployee(String userId, Employee employee) async {
     try {
-      await _employeeCollection.doc(userId).update(employee.toMap());
+      final doc = await _employeeCollection.doc(userId).get();
+      if (!doc.exists) {
+        AppLogger.printError('Employee does not exist: $userId');
+        throw Exception('Employee does not exist: $userId');
+      } else {
+        await _employeeCollection.doc(userId).update(employee.toMap());
+        AppLogger.printInfo('Employee Updated successfully.');
+      }
     } catch (e) {
+      AppLogger.printError(e.toString());
       throw Exception('Error updating Employee: $e');
     }
   }
 
   Future<void> deleteEmployee(String userId) async {
     try {
-      await _employeeCollection.doc(userId).delete();
+      final doc = await _employeeCollection.doc(userId).get();
+      if (!doc.exists) {
+        AppLogger.printError('Employee does not exist: $userId');
+        throw Exception('Employee does not exist: $userId');
+      } else {
+        await _employeeCollection.doc(userId).delete();
+        AppLogger.printInfo('Employee Deleted successfully.');
+      }
     } catch (e) {
+      AppLogger.printError(e.toString());
       throw Exception('Error deleting Employee: $e');
     }
   }
@@ -55,6 +74,7 @@ class EmployeeRepository {
       QuerySnapshot snapshot = await _employeeCollection.get();
       return snapshot.docs.map((doc) => Employee.fromDocument(doc)).toList();
     } catch (e) {
+      AppLogger.printError(e.toString());
       throw Exception('Error getting all Employee: $e');
     }
   }
@@ -68,6 +88,7 @@ class EmployeeRepository {
         throw Exception('Employee not found');
       }
     } catch (e) {
+      AppLogger.printError(e.toString());
       throw Exception('Error getting Employee: $e');
     }
   }
@@ -76,14 +97,15 @@ class EmployeeRepository {
     try {
       QuerySnapshot querySnapshot =
           await _employeeCollection.where('userId', isEqualTo: userId).get();
-
       if (querySnapshot.docs.isNotEmpty) {
         DocumentSnapshot doc = querySnapshot.docs.first;
         return Employee.fromDocument(doc);
       } else {
-        return null;
+        AppLogger.printError('Employee not found with Id $userId');
+        throw Exception('Employee not found with Id $userId');
       }
     } catch (e) {
+      AppLogger.printError(e.toString());
       throw Exception('Error getting Employee by email: $e');
     }
   }

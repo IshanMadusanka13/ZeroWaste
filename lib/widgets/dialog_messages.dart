@@ -23,6 +23,10 @@ Future<void> okMessageDialog(BuildContext context, String title, String msg) {
 
 ScaffoldFeatureController<SnackBar, SnackBarClosedReason> bottomMessage(
     BuildContext context, String msg) {
-  return ScaffoldMessenger.of(context)
-      .showSnackBar(SnackBar(content: Text(msg)));
+  return ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(msg),
+      backgroundColor: Colors.green,
+    ),
+  );
 }

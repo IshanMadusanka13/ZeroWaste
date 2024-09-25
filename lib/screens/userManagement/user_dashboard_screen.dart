@@ -38,7 +38,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> {
 
   void getLoginedUser() {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    if (userProvider.user != null) {
+    if (userProvider.user == null) {
       context.go('/user/login');
     }
     loginedUser = userProvider.user!;

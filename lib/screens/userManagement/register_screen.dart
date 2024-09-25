@@ -1,11 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:zero_waste/models/business_owner.dart';
 import 'package:zero_waste/models/household_user.dart';
 import 'package:zero_waste/models/user.dart';
-import 'package:zero_waste/repositories/business_owner_repository.dart';
 import 'package:zero_waste/repositories/household_user_repository.dart';
 import 'package:zero_waste/utils/user_types.dart';
 import 'package:zero_waste/utils/validators.dart';
@@ -50,57 +47,43 @@ class _RegisterScreenState extends State<RegisterScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('User registration'),
-        backgroundColor: Colors.green,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            context.go('/home');
-          },
-        ),
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: Colors.white,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.grey[300],
-          tabs: const <Widget>[
-            Tab(
-              icon: Icon(Icons.house),
-            ),
-            Tab(
-              icon: Icon(Icons.business),
-            ),
-          ],
+        body: Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Colors.green.shade200, Colors.blue.shade200],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: <Widget>[
-          Center(
-            child: householdRegister(context),
-          ),
-          Center(
-            child: businessRegister(context),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget householdRegister(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Colors.green.shade200, Colors.blue.shade200],
-          ),
-        ),
-        child: SafeArea(
-            child: CustomScrollView(
+      child: SafeArea(
+        child: CustomScrollView(
           slivers: [
+            SliverAppBar(
+              expandedHeight: 200.0,
+              floating: false,
+              pinned: true,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.green),
+                onPressed: () {
+                  context.go('/home');
+                },
+              ),
+              flexibleSpace: FlexibleSpaceBar(
+                titlePadding: const EdgeInsets.only(left: 120.0, bottom: 155.0),
+                title: const Text(
+                  'User Register',
+                  style: TextStyle(
+                    color: Colors.green,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.0,
+                  ),
+                ),
+                background: Image.asset(
+                  'assets/garbage.jpg',
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
             SliverToBoxAdapter(
                 child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -125,8 +108,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                     const SizedBox(height: 16),
                     AppDatePicker(
                       title: "Date Of Birth",
-                      onChangedDate: (value) =>
-                          dob = value!,
+                      onChangedDate: (value) => dob = value!,
                     ),
                     const SizedBox(height: 16),
                     TextFieldInput(
@@ -212,119 +194,9 @@ class _RegisterScreenState extends State<RegisterScreen>
               ),
             ))
           ],
-        )),
-      ),
-    );
-  }
-
-  Widget businessRegister(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Colors.green.shade200, Colors.blue.shade200],
-          ),
         ),
-        child: SafeArea(
-            child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-                child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Form(
-                key: _businessFormKey,
-                child: Column(
-                  children: [
-                    TextFieldInput(
-                      title: 'Company Name',
-                      icon: Icons.business,
-                      controller: _companyNameController,
-                      inputType: TextInputType.text,
-                      validator: Validators.nullCheck,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFieldInput(
-                        title: "Contact Person Name",
-                        icon: Icons.person,
-                        controller: _contactPersonController,
-                        inputType: TextInputType.text,
-                        validator: Validators.nullCheck),
-                    const SizedBox(height: 16),
-                    TextFieldInput(
-                        title: "Contact Number",
-                        icon: Icons.person,
-                        controller: _mobileNoController,
-                        inputType: TextInputType.number,
-                        validator: Validators.validateMobile),
-                    const SizedBox(height: 16),
-                    TextFieldInput(
-                        title: "Address",
-                        icon: Icons.person,
-                        controller: _addressController,
-                        inputType: TextInputType.text,
-                        validator: Validators.nullCheck),
-                    const SizedBox(height: 16),
-                    SelectDropdown(
-                        title: "No of Employees",
-                        items: const [
-                          '1 - 50',
-                          '51 - 100',
-                          '100 - 200',
-                          '200+',
-                        ],
-                        selectedValue: _noOfEmployees,
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _noOfEmployees = newValue;
-                          });
-                        },
-                        hint: "Select Item"),
-                    const SizedBox(height: 16),
-                    TextFieldInput(
-                      title: "Email",
-                      icon: Icons.person,
-                      controller: _emailController,
-                      validator: Validators.validateEmail,
-                      inputType: TextInputType.emailAddress,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFieldInput(
-                      title: "Password",
-                      icon: Icons.person,
-                      controller: _passwordController,
-                      inputType: TextInputType.visiblePassword,
-                      validator: Validators.validatePassword,
-                    ),
-                    const SizedBox(height: 24),
-                    SubmitButton(
-                        icon: Icons.send,
-                        text: "Register",
-                        whenPressed: _submitBusinessForm),
-                    const SizedBox(height: 10),
-                    RichText(
-                        text: TextSpan(children: [
-                      TextSpan(
-                          text: "Already have an account?",
-                          style: Theme.of(context).textTheme.bodyMedium),
-                      TextSpan(
-                          text: "Login",
-                          style: const TextStyle(
-                              fontSize: 15, color: Colors.orangeAccent),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              context.go("/user/login");
-                            })
-                    ]))
-                  ],
-                ),
-              ),
-            ))
-          ],
-        )),
       ),
-    );
+    ));
   }
 
   void _submitForm(BuildContext context) {
@@ -349,29 +221,6 @@ class _RegisterScreenState extends State<RegisterScreen>
         okMessageDialog(
             context, "Success!", "HouseholdUser Registered Successfully");
         context.go('/user/login');
-      }).catchError((error, stack) {
-        okMessageDialog(context, "Failed!", error.toString());
-      });
-    }
-  }
-
-  void _submitBusinessForm(BuildContext context) {
-    if (_formKey.currentState!.validate()) {
-      final user = User(
-        email: _emailController.text,
-        password: _passwordController.text,
-        userType: 'BusinessOwner',
-      );
-      final businessOwner = BusinessOwner(
-        companyName: _companyNameController.text,
-        contactPersonName: _contactPersonController.text,
-        mobile: _mobileNoController.text,
-        address: _addressController.text,
-        userId: '',
-      );
-      BusinessOwnerRepository().addBusinessUser(user, businessOwner).then((_) {
-        okMessageDialog(
-            context, "Success!", "Business User Registred Successfully");
       }).catchError((error, stack) {
         okMessageDialog(context, "Failed!", error.toString());
       });

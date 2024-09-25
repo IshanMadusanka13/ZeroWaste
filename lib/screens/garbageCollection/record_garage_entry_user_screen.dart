@@ -1,6 +1,3 @@
-import 'dart:typed_data';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:zero_waste/models/garbage_entry.dart';
@@ -13,6 +10,7 @@ import 'package:zero_waste/repositories/garbage_entry_repository.dart';
 import 'package:zero_waste/repositories/points_repository.dart';
 import 'package:zero_waste/repositories/rewards_repository.dart';
 import 'package:zero_waste/utils/validators.dart';
+import 'package:zero_waste/widgets/dialog_messages.dart';
 import 'package:zero_waste/widgets/submit_button.dart';
 import 'package:zero_waste/widgets/text_field_input.dart';
 
@@ -81,10 +79,8 @@ class _RecordGarbageEntryScreenState extends State<RecordGarbageEntryScreen> {
               (double.tryParse(_metalWeight.text) ?? 0) +
               (double.tryParse(_eWasteWeight.text) ?? 0) ==
           0) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Please enter at least one waste weight')),
-        );
+        okMessageDialog(
+            context, "Error!", 'Please enter at least one waste weight');
         return;
       }
 
@@ -107,12 +103,8 @@ class _RecordGarbageEntryScreenState extends State<RecordGarbageEntryScreen> {
           .updateRewardsForUser(entry.userId, _totalPoints);
 
       await _generateAndDownloadPDF(entry);
-
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content:
-            Text('Garbage entry recorded! You earned $_totalPoints points!'),
-        backgroundColor: Colors.green,
-      ));
+      bottomMessage(
+          context, 'Garbage entry recorded! You earned $_totalPoints points!');
     }
   }
 
@@ -150,7 +142,6 @@ class _RecordGarbageEntryScreenState extends State<RecordGarbageEntryScreen> {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-
               pw.Container(
                 padding: const pw.EdgeInsets.all(10),
                 decoration: const pw.BoxDecoration(
@@ -176,7 +167,6 @@ class _RecordGarbageEntryScreenState extends State<RecordGarbageEntryScreen> {
                 ),
               ),
               pw.SizedBox(height: 20),
-
               pw.Text(
                 'Details:',
                 style: pw.TextStyle(
@@ -189,7 +179,6 @@ class _RecordGarbageEntryScreenState extends State<RecordGarbageEntryScreen> {
                 color: PdfColors.green700,
               ),
               pw.SizedBox(height: 10),
-
               pw.Table(
                 border: pw.TableBorder.all(width: 2, color: PdfColors.green300),
                 columnWidths: {
@@ -213,7 +202,6 @@ class _RecordGarbageEntryScreenState extends State<RecordGarbageEntryScreen> {
                 ],
               ),
               pw.SizedBox(height: 20),
-
               pw.Container(
                 alignment: pw.Alignment.centerRight,
                 padding: const pw.EdgeInsets.all(10),
@@ -262,8 +250,8 @@ class _RecordGarbageEntryScreenState extends State<RecordGarbageEntryScreen> {
                   },
                 ),
                 flexibleSpace: FlexibleSpaceBar(
-                  titlePadding: const EdgeInsets.only(
-                      left: 120.0, bottom: 155.0),
+                  titlePadding:
+                      const EdgeInsets.only(left: 120.0, bottom: 155.0),
                   title: const Text(
                     'Record Garbage',
                     style: TextStyle(

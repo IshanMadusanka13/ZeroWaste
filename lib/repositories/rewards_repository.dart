@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:zero_waste/models/reward.dart';
+import 'package:zero_waste/utils/app_logger.dart';
 
 class RewardsRepository {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final CollectionReference _rewardsCollection =
       FirebaseFirestore.instance.collection('rewards');
 
@@ -18,6 +20,7 @@ class RewardsRepository {
         await _rewardsCollection.doc(userId).set(newReward.toMap());
       }
     } catch (e) {
+      AppLogger.printError(e.toString());
       throw Exception('Error updating rewards: $e');
     }
   }
@@ -41,18 +44,20 @@ class RewardsRepository {
             'points': updatedPoints,
           });
 
-          print('Reward points updated: $updatedPoints');
+          AppLogger.printInfo('Reward points updated: $updatedPoints');
         } else {
-          print('No change in reward points.');
+          AppLogger.printInfo('No change in reward points.');
         }
       } else {
         await _rewardsCollection.doc(userId).set({
           'points': newPoints.round(),
         });
 
-        print('New reward created with points: ${newPoints.round()}');
+        AppLogger.printInfo(
+            'New reward created with points: ${newPoints.round()}');
       }
     } catch (e) {
+      AppLogger.printError(e.toString());
       throw Exception('Error updating reward points: $e');
     }
   }
@@ -72,16 +77,53 @@ class RewardsRepository {
           await _rewardsCollection.doc(userId).update({
             'points': updatedPoints,
           });
-          print('Reward points reduced: $updatedPoints');
+          AppLogger.printInfo('Reward points reduced: $updatedPoints');
         } else {
           await _rewardsCollection.doc(userId).delete();
-          print('Reward deleted due to zero points.');
+          AppLogger.printInfo('Reward deleted due to zero points.');
         }
       } else {
-        print('No reward found for user.');
+        AppLogger.printError('No reward found for user.');
       }
     } catch (e) {
+      AppLogger.printError(e.toString());
       throw Exception('Error reducing reward points: $e');
     }
+  }
+
+  Future<bool> buyItem(String userId, int itemPoints) async {
+    try {
+      return await _firestore.runTransaction((transaction) async {
+        DocumentReference rewardRef =
+            _firestore.collection('rewards').doc(userId);
+        DocumentSnapshot rewardDoc = await transaction.get(rewardRef);
+
+        if (!rewardDoc.exists) {
+          return false;
+        }
+
+        Reward reward = Reward.fromDocument(rewardDoc);
+
+        if (reward.points < itemPoints) {
+          return false;
+        }
+
+        int newPoints = reward.points - itemPoints;
+        transaction.update(rewardRef, {'points': newPoints});
+
+        return true;
+      });
+    } catch (e) {
+      AppLogger.printError(e.toString());
+      return false;
+    }
+  }
+
+  Stream<Reward> getRewardStream(String userId) {
+    return _firestore
+        .collection('rewards')
+        .doc(userId)
+        .snapshots()
+        .map((snapshot) => Reward.fromDocument(snapshot));
   }
 }

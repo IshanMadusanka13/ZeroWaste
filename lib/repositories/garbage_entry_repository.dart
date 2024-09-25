@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:zero_waste/models/garbage_entry.dart';
 import 'package:zero_waste/repositories/rewards_repository.dart';
+import 'package:zero_waste/utils/app_logger.dart';
 
 class GarbageEntryRepository {
   final CollectionReference _garbageEntryCollectionCollection =
@@ -9,18 +10,28 @@ class GarbageEntryRepository {
   Future<void> addEntry(GarbageEntry garbageEntry) async {
     try {
       await _garbageEntryCollectionCollection.add(garbageEntry.toMap());
+      AppLogger.printInfo('Garbage entry Added successfully.');
     } catch (e) {
+      AppLogger.printError(e.toString());
       throw Exception('Error adding GarbageEntry: $e');
     }
   }
 
   Future<void> updateEntry(String garbageId, GarbageEntry garbageEntry) async {
     try {
-      await _garbageEntryCollectionCollection
-          .doc(garbageId)
-          .update(garbageEntry.toMap());
+      final doc = await _garbageEntryCollectionCollection.doc(garbageId).get();
+      if (!doc.exists) {
+        AppLogger.printError('Garbage Entry does not exist: $garbageId');
+        throw Exception('Garbage Entry does not exist: $garbageId');
+      } else {
+        await _garbageEntryCollectionCollection
+            .doc(garbageId)
+            .update(garbageEntry.toMap());
+        AppLogger.printInfo('Garbage entry Updated successfully.');
+      }
     } catch (e) {
-      throw Exception('Error updating GarbageEntry: $e');
+      AppLogger.printError(e.toString());
+      throw Exception('Error deleting CollectionRoute: $e');
     }
   }
 
@@ -37,11 +48,12 @@ class GarbageEntryRepository {
 
         await _garbageEntryCollectionCollection.doc(garbageId).delete();
 
-        print('Garbage entry deleted successfully.');
+        AppLogger.printInfo('Garbage entry deleted successfully.');
       } else {
-        print('Garbage entry not found.');
+        AppLogger.printError('Garbage entry not found.');
       }
     } catch (e) {
+      AppLogger.printError(e.toString());
       throw Exception('Error deleting GarbageEntry: $e');
     }
   }

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:zero_waste/models/user.dart';
 import 'package:zero_waste/providers/user_provider.dart';
+import 'package:zero_waste/utils/app_logger.dart';
 import 'package:zero_waste/utils/validators.dart';
 import 'package:zero_waste/widgets/dialog_messages.dart';
 import 'package:zero_waste/widgets/submit_button.dart';

@@ -5,6 +5,7 @@ import 'package:zero_waste/models/points.dart';
 import 'package:zero_waste/repositories/garbage_entry_repository.dart';
 import 'package:zero_waste/repositories/points_repository.dart';
 import 'package:zero_waste/repositories/rewards_repository.dart';
+import 'package:zero_waste/widgets/dialog_messages.dart';
 import 'package:zero_waste/widgets/submit_button.dart';
 
 class EditEntryScreen extends StatefulWidget {
@@ -101,12 +102,8 @@ class _EditEntryScreenState extends State<EditEntryScreen> {
         organicWeight < 0 ||
         metalWeight < 0 ||
         ewasteWeight < 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter non-negative values for all weights.'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      okMessageDialog(context, "Error!",
+          'Please enter non-negative values for all weights.');
       return;
     }
 
@@ -127,26 +124,16 @@ class _EditEntryScreenState extends State<EditEntryScreen> {
     GarbageEntryRepository()
         .updateEntry(widget.entry.id, garbageEntry)
         .then((_) async {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Entry updated successfully!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      bottomMessage(context, 'Entry updated successfully!');
 
-       await RewardsRepository().updateRewardPointsBasedOnGarbageEntry(
+      await RewardsRepository().updateRewardPointsBasedOnGarbageEntry(
           widget.entry.userId, previousPoints, newTotalPoints);
 
       Future.delayed(const Duration(seconds: 2), () {
         context.go("/collection/history");
       });
     }).catchError((error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to update entry: $error'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      okMessageDialog(context, "Error!", 'Failed to update entry: $error');
     });
   }
 

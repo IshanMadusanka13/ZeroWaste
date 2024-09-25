@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:zero_waste/models/route_schedule.dart';
+import 'package:zero_waste/utils/app_logger.dart';
 
 class RouteScheduleRepository {
   final CollectionReference _scheduleCollection =
@@ -9,24 +10,39 @@ class RouteScheduleRepository {
     try {
       await _scheduleCollection.add(routeSchedule.toMap());
     } catch (e) {
+      AppLogger.printError(e.toString());
       throw Exception('Error adding RouteSchedule: $e');
     }
   }
 
   Future<void> updateSchedule(RouteSchedule routeSchedule) async {
     try {
-      await _scheduleCollection
-          .doc(routeSchedule.id)
-          .update(routeSchedule.toMap());
+      final doc = await _scheduleCollection.doc(routeSchedule.id).get();
+      if (!doc.exists) {
+        throw Exception('RouteSchedule does not exist: ${routeSchedule.id}');
+      } else {
+        await _scheduleCollection
+            .doc(routeSchedule.id)
+            .update(routeSchedule.toMap());
+        AppLogger.printInfo('RouteSchedule Updated successfully.');
+      }
     } catch (e) {
+      AppLogger.printError(e.toString());
       throw Exception('Error updating RouteSchedule: $e');
     }
   }
 
   Future<void> deleteSchedule(String scheduleId) async {
     try {
-      await _scheduleCollection.doc(scheduleId).delete();
+      final doc = await _scheduleCollection.doc(scheduleId).get();
+      if (!doc.exists) {
+        throw Exception('RouteSchedule does not exist: $scheduleId');
+      } else {
+        await _scheduleCollection.doc(scheduleId).delete();
+        AppLogger.printInfo('RouteSchedule Deleted successfully.');
+      }
     } catch (e) {
+      AppLogger.printError(e.toString());
       throw Exception('Error deleting RouteSchedule: $e');
     }
   }
@@ -38,6 +54,7 @@ class RouteScheduleRepository {
           .map((doc) => RouteSchedule.fromDocument(doc))
           .toList();
     } catch (e) {
+      AppLogger.printError(e.toString());
       throw Exception('Error getting all RouteSchedule: $e');
     }
   }
@@ -52,6 +69,7 @@ class RouteScheduleRepository {
         throw Exception('RouteSchedule not found');
       }
     } catch (e) {
+      AppLogger.printError(e.toString());
       throw Exception('Error getting RouteSchedule: $e');
     }
   }
