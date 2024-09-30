@@ -15,7 +15,7 @@ class BinView extends StatefulWidget {
 
 class _BinViewState extends State<BinView>{
   late MapController controller;
-  double _currentZoom = 12.0;
+  final double _currentZoom = 12.0;
 
   @override
   void initState() {
@@ -59,7 +59,7 @@ class _BinViewState extends State<BinView>{
 
   Future<void> loadBins() async {
     List<WasteBin> bins = await WasteBinRepository().getAllBins();
-    print("bins are ${bins}");
+    print("bins are $bins");
     for (WasteBin bin in bins) {
       await controller.addMarker(
         GeoPoint(latitude: bin.latitude, longitude: bin.longitude),

@@ -45,7 +45,7 @@ class HomeScreen extends StatelessWidget {
                     const SizedBox(height: 20),
                     user != null
                         ? Text('Logged in as: ${user.email}')
-                        : Text('No user logged in'),
+                        : const Text('No user logged in'),
                     const SizedBox(height: 20),
                     _buildDashboardButton(
                       context: context,
@@ -94,6 +94,13 @@ class HomeScreen extends StatelessWidget {
                       text: 'User History',
                       icon: Icons.history,
                       route: '/user-history',
+                    ),
+                    const SizedBox(height: 20),
+                    _buildDashboardButton(
+                      context: context,
+                      text: 'Smart Bin Level',
+                      icon: Icons.recycling,
+                      route: '/smartbin/garabagelevel',
                     ),
                   ],
                 ),
