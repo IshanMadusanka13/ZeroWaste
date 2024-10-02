@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
+import 'package:http/http.dart' as http; // For sending HTTP requests
+import 'dart:convert'; // For JSON encoding
 
 class QRScanPage extends StatelessWidget {
   const QRScanPage({super.key});
@@ -134,14 +136,15 @@ class _QRViewExampleState extends State<QRViewExample> {
     final querySnapshot = await usersCollection.get();
 
     // Prepare the message
-    String message = 'Smart bin clear: $url';
+    String message = 'Slim front smart bin is clear: $url';
 
-    // Send message to all users (you can customize this part)
+    // Send message to all users
     for (var doc in querySnapshot.docs) {
       String userId = doc.id; // Assuming each document ID is a user ID
-      // Implement your logic to send a message or notification
-      // For example, you might use Firebase Cloud Messaging (FCM) to send notifications
-      // Or you can store the messages in the Firestore as needed
+      String? fcmToken = doc.data()['fcm_token']; // Replace with your field name for FCM tokens
+      if (fcmToken != null) {
+        await _sendPushNotification(fcmToken, message); // Send the push notification
+      }
       print('Sending message to $userId: $message'); // Replace with actual sending logic
     }
 
@@ -149,6 +152,32 @@ class _QRViewExampleState extends State<QRViewExample> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Message sent to all users.')),
     );
+  }
+
+  Future<void> _sendPushNotification(String fcmToken, String message) async {
+    final url = 'https://fcm.googleapis.com/fcm/send';
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'key=YOUR_SERVER_KEY', // Replace with your server key
+    };
+    final body = jsonEncode({
+      'to': fcmToken,
+      'notification': {
+        'title': 'Smart Bin Alert',
+        'body': message,
+      },
+    });
+
+    try {
+      final response = await http.post(Uri.parse(url), headers: headers, body: body);
+      if (response.statusCode == 200) {
+        print('Push notification sent successfully.');
+      } else {
+        print('Failed to send push notification: ${response.body}');
+      }
+    } catch (e) {
+      print('Error sending push notification: $e');
+    }
   }
 
   void _showAwesomeMessage() {
