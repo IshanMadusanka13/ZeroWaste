@@ -10,6 +10,8 @@ import 'package:zero_waste/screens/splash_screen.dart';
 import 'package:zero_waste/screens/userManagement/register_screen.dart';
 
 import '../smartbin/garbage_level.dart';
+import '../smartbin/qr_genarator.dart';
+import '../smartbin/qr_scanner.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -48,6 +50,12 @@ class AppRouter {
       GoRoute(
           path: '/smartbin/garabagelevel',
           builder: (context, state) => GarbageLevelPage()),
+      GoRoute(
+          path: '/smartbin/qrgenarate',
+          builder: (context, state) => QrGenerate()),
+      GoRoute(
+          path: '/smartbin/qrscanner',
+          builder: (context, state) => QRScanPage()),
     ],
   );
 }
