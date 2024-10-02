@@ -9,6 +9,7 @@ import 'package:zero_waste/screens/userManagement/login_screen.dart';
 import 'package:zero_waste/screens/splash_screen.dart';
 import 'package:zero_waste/screens/userManagement/register_screen.dart';
 
+import '../notification_listener.dart';
 import '../smartbin/garbage_level.dart';
 import '../smartbin/qr_genarator.dart';
 import '../smartbin/qr_scanner.dart';
@@ -56,6 +57,10 @@ class AppRouter {
       GoRoute(
           path: '/smartbin/qrscanner',
           builder: (context, state) => QRScanPage()),
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) => NotificationListener(),
+      ),
     ],
   );
 }

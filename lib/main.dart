@@ -5,11 +5,12 @@ import 'package:zero_waste/firebase_options.dart';
 import 'package:zero_waste/providers/user_provider.dart';
 import 'package:zero_waste/routes/routes.dart';
 import 'package:zero_waste/theme.dart';
+import 'package:zero_waste/notification_listener.dart'; // Import the notification listener
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await Firebase.initializeApp();
+
   runApp(
     MultiProvider(
       providers: [
@@ -22,7 +23,6 @@ void main() async{
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
 
   @override
   Widget build(BuildContext context) {

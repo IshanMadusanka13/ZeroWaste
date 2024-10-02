@@ -119,6 +119,13 @@ class HomeScreen extends StatelessWidget {
                             icon: Icons.qr_code,
                             route: '/smartbin/qrscanner',
                           ),
+                          const SizedBox(height: 20),
+                          _buildDashboardButton(
+                            context: context,
+                            text: 'notification',
+                            icon: Icons.notification_important,
+                            route: '/notifications',
+                          ),
                         ],
                       ),
                     ),
