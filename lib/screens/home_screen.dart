@@ -1,247 +1,187 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
-import 'package:zero_waste/providers/user_provider.dart';
-import 'package:zero_waste/screens/binManagement/schedule_details.dart';
-import 'package:zero_waste/widgets/dialog_messages.dart';
-import 'package:zero_waste/widgets/submit_button.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-
-    final userProvider = Provider.of<UserProvider>(context);
-    final user = userProvider.user;
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Temporary Home Screen'),
-        foregroundColor: const Color.fromARGB(255, 255, 255, 255),
-        backgroundColor: Colors.green.shade700,
-      ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFa8e063), Color(0xFF56ab2f)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+        backgroundColor: Colors.green[700],
+        elevation: 0,
+        centerTitle: true,
+        // Centers the title
+        title: const Text(
+          'Zero Waste',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
           ),
         ),
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.shopping_cart, color: Colors.white),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.account_circle, color: Colors.white),
+            onPressed: () {},
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        // Wrap with SingleChildScrollView
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Search Box
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: const Offset(0, 3), // changes position of shadow
+                    ),
+                  ],
+                ),
+                child: const TextField(
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Search your "Trash Type"',
+                    prefixIcon: Icon(Icons.search, color: Colors.green),
+                  ),
+                ),
               ),
-              elevation: 8,
-              shadowColor: Colors.green.shade200,
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 20),
-                    user != null
-                        ? Text('Logged in as: ${user.email}')
-                        : Text('No user logged in'),
-                    const SizedBox(height: 20),
-                    _buildDashboardButton(
-                      context: context,
-                      text: 'Login',
-                      icon: Icons.login,
-                      route: '/user/login',
-                    ),
-                    const SizedBox(height: 20),
-                    _buildDashboardButton(
-                      context: context,
-                      text: 'User profile',
-                      icon: Icons.history,
-                      route: '/profile',
-                    ),
-                    const SizedBox(height: 20),
-                  ElevatedButton.icon(
-                    onPressed: () => executeMethod(context),
-                    icon: Icon(Icons.add_circle_outline),
-                    label: const Text("Print"),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
+              const SizedBox(height: 20),
+
+              // Banner Carousel
+              Container(
+                height: 150,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  image: const DecorationImage(
+                    image: AssetImage(
+                        'assets/garbage.jpg'), // Replace with your banner image
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Category Section
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Category',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green[700],
                     ),
                   ),
-                    const SizedBox(height: 20),
-                    _buildDashboardButton(
-                      context: context,
-                      text: 'Record Garbage Entry',
-                      icon: Icons.add_circle_outline,
-                      route: '/collection/entry',
+                  TextButton(onPressed: () {}, child: const Text('See All')),
+                ],
+              ),
+              GridView(
+                physics: const NeverScrollableScrollPhysics(),
+                // Disable scroll inside the GridView
+                shrinkWrap: true,
+                // Allow GridView to shrink and fit content
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                ),
+                children: [
+                  _buildCategoryCard('Paper', Icons.book, Colors.orange),
+                  _buildCategoryCard('Metals', Icons.hardware, Colors.grey),
+                  _buildCategoryCard('Plastic', Icons.delete, Colors.blue),
+                  _buildCategoryCard('Glass', Icons.wine_bar, Colors.teal),
+                  _buildCategoryCard('E-Waste', Icons.tv, Colors.red),
+                  _buildCategoryCard('Organic', Icons.eco, Colors.green),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              // Tips Section
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Tips',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green[700],
                     ),
-                    const SizedBox(height: 20),
-                    _buildDashboardButton(
-                      context: context,
-                      text: 'User History',
-                      icon: Icons.history,
-                      route: '/collection/history',
-                    ),
-                    const SizedBox(height: 20),
-                    _buildDashboardButton(
-                      context: context,
-                      text: 'Points',
-                      icon: Icons.history,
-                      route: '/reward/points',
-                    ),
-                    const SizedBox(height: 20),
-                    _buildDashboardButton(
-                      context: context,
-                      text: 'Gifts',
-                      icon: Icons.history,
-                      route: '/reward/gifts',
-                    ),
-                    const SizedBox(height: 20),
-                    _buildDashboardButton(
-                      context: context,
-                      text: 'Items',
-                      icon: Icons.history,
-                      route: '/reward/items',
-                    // Wrapping buttons in ListView for scrollable content
+                  ),
+                  TextButton(onPressed: () {}, child: const Text('More')),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.green[50],
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.camera_alt, color: Colors.green),
+                    const SizedBox(width: 10),
                     Expanded(
-                      child: ListView(
-                        shrinkWrap: true,
-                        children: [
-                          _buildDashboardButton(
-                            context: context,
-                            text: 'Login',
-                            icon: Icons.login,
-                            route: '/user/login',
-                          ),
-                          const SizedBox(height: 20),
-                          _buildDashboardButton(
-                            context: context,
-                            text: 'Register',
-                            icon: Icons.app_registration,
-                            route: '/user/register',
-                          ),
-                          const SizedBox(height: 20),
-                          _buildDashboardButton(
-                            context: context,
-                            text: 'Bin Create',
-                            icon: Icons.create,
-                            route: '/bin/create',
-                          ),
-                          const SizedBox(height: 20),
-                          _buildDashboardButton(
-                            context: context,
-                            text: 'Bin View',
-                            icon: Icons.remove_red_eye,
-                            route: '/bin/view',
-                          ),
-                          const SizedBox(height: 20),
-                          _buildDashboardButton(
-                            context: context,
-                            text: 'Record Garbage Entry',
-                            icon: Icons.add_circle_outline,
-                            route: '/record-entry',
-                          ),
-                          const SizedBox(height: 20),
-                          _buildDashboardButton(
-                            context: context,
-                            text: 'Manage Rewards',
-                            icon: Icons.card_giftcard,
-                            route: '/manage-rewards',
-                          ),
-                          const SizedBox(height: 20),
-                          _buildDashboardButton(
-                            context: context,
-                            text: 'User History',
-                            icon: Icons.history,
-                            route: '/user-history',
-                          ),
-                          const SizedBox(height: 20),
-                          _buildDashboardButton(
-                            context: context,
-                            text: 'Smart Bin Level',
-                            icon: Icons.recycling,
-                            route: '/smartbin/garabagelevel',
-                          ),
-                          const SizedBox(height: 20),
-                          _buildDashboardButton(
-                            context: context,
-                            text: 'SmartBin QR Code Gen',
-                            icon: Icons.qr_code,
-                            route: '/smartbin/qrgenarate',
-                          ),
-                          const SizedBox(height: 20),
-                          _buildDashboardButton(
-                            context: context,
-                            text: 'QR Code Scanner',
-                            icon: Icons.qr_code,
-                            route: '/smartbin/qrscanner',
-                          ),
-                          const SizedBox(height: 20),
-                          _buildDashboardButton(
-                            context: context,
-                            text: 'notification',
-                            icon: Icons.notification_important,
-                            route: '/notifications',
-                          ),
-                        ],
+                      child: Text(
+                        'Take photos of your trash to help us categorize it better!',
+                        style:
+                            TextStyle(color: Colors.green[700], fontSize: 16),
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildDashboardButton({
-    required BuildContext context,
-    required String text,
-    required IconData icon,
-    required String route,
-  }) {
-    return ElevatedButton.icon(
-      onPressed: () => context.go(route),
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        elevation: 5,
-        backgroundColor: Colors.green.shade600,
-        shadowColor: Colors.green.shade300,
-      ),
-      icon: Icon(
-        icon,
-        color: Colors.white,
-        size: 24,
-      ),
-      label: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
+  // Helper method to create category cards
+  Widget _buildCategoryCard(String title, IconData icon, Color color) {
+    return GestureDetector(
+      onTap: () {
+        // Navigate to respective category page
+      },
+      child: Container(
+        decoration: BoxDecoration(
           color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
+              blurRadius: 5,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 40, color: color),
+            const SizedBox(height: 10),
+            Text(title,
+                style: TextStyle(color: Colors.green[700], fontSize: 16)),
+          ],
         ),
       ),
     );
-  }
-
-  executeMethod(BuildContext context) {
-    ScheduleDetails().getDetails(context).then((_){
-      print("YO YO");
-    }).catchError((error){
-      okMessageDialog(context, "Failed", error.toString());
-    });
   }
 }

@@ -17,13 +17,12 @@ import 'package:zero_waste/screens/splash_screen.dart';
 import 'package:zero_waste/screens/userManagement/register_screen.dart';
 import 'package:zero_waste/screens/userManagement/user_dashboard_screen.dart';
 import 'package:zero_waste/screens/userManagement/user_update_screen.dart';
+import '../notification_listener.dart';
+import '../screens/smartbin/garbage_level.dart';
+import '../screens/smartbin/qr_genarator.dart';
+import '../screens/smartbin/qr_scanner.dart';
 
 import '../models/user.dart';
-
-import '../notification_listener.dart';
-import '../smartbin/garbage_level.dart';
-import '../smartbin/qr_genarator.dart';
-import '../smartbin/qr_scanner.dart';
 
 class AppRouter {
   static final router = GoRouter(

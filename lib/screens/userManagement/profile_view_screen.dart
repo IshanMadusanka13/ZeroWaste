@@ -199,6 +199,29 @@ class ProfileViewScreen extends StatelessWidget {
                 text: 'Reward Points',
                 onTap: () => context.go('/reward/points'),
               ),
+              _buildProfileOption(
+                context: context,
+                text: 'Smart Bin Level',
+                icon: Icons.recycling,
+                onTap: () => context.go('/smartbin/garabagelevel'),
+              ),
+              _buildProfileOption(
+                context: context,
+                text: 'SmartBin QR Code Gen',
+                icon: Icons.qr_code,
+                onTap: () => context.go('/smartbin/qrgenarate'),
+              ),
+              _buildProfileOption(
+                context: context,
+                text: 'QR Code Scanner',
+                icon: Icons.qr_code,
+                onTap: () => context.go('/smartbin/qrscanner'),
+              ),_buildProfileOption(
+                context: context,
+                text: 'notification',
+                icon: Icons.notification_important,
+                onTap: () => context.go('/notifications'),
+              ),
             ],
           );
         case UserTypes.TRUCK_DRIVER:
