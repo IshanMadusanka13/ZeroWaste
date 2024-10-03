@@ -6,6 +6,7 @@ import 'package:zero_waste/screens/binManagement/create_route_screen.dart';
 import 'package:zero_waste/screens/garbageCollection/record_garage_entry_user_screen.dart';
 import 'package:zero_waste/screens/garbageCollection/user_history_screen.dart';
 import 'package:zero_waste/screens/home_screen.dart';
+import 'package:zero_waste/screens/onBoarding_screen.dart';
 import 'package:zero_waste/screens/rewardingSystem/item_dashboard.dart';
 import 'package:zero_waste/screens/rewardingSystem/manage_points.dart';
 import 'package:zero_waste/screens/rewardingSystem/manage_rewards_screen.dart';
@@ -24,6 +25,7 @@ class AppRouter {
     routes: [
       //General Routes
       GoRoute(path: '/', builder: (context, state) => SplashScreen()),
+      GoRoute(path: '/onboard', builder: (context, state) => const OnboardingScreen()),
       GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
 
       //User Management Routes
