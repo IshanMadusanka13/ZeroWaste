@@ -20,6 +20,11 @@ import 'package:zero_waste/screens/userManagement/user_update_screen.dart';
 
 import '../models/user.dart';
 
+import '../notification_listener.dart';
+import '../smartbin/garbage_level.dart';
+import '../smartbin/qr_genarator.dart';
+import '../smartbin/qr_scanner.dart';
+
 class AppRouter {
   static final router = GoRouter(
     routes: [
@@ -74,6 +79,20 @@ class AppRouter {
       GoRoute(
           path: '/profile',
           builder: (context, state) => const UserDashboardScreen()),
+      //smartbin level routes
+      GoRoute(
+          path: '/smartbin/garabagelevel',
+          builder: (context, state) => GarbageLevelPage()),
+      GoRoute(
+          path: '/smartbin/qrgenarate',
+          builder: (context, state) => QrGenerate()),
+      GoRoute(
+          path: '/smartbin/qrscanner',
+          builder: (context, state) => QRScanPage()),
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) => NotificationListener(),
+      ),
     ],
   );
 }

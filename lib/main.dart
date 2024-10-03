@@ -6,6 +6,7 @@ import 'package:zero_waste/firebase_options.dart';
 import 'package:zero_waste/providers/user_provider.dart';
 import 'package:zero_waste/routes/routes.dart';
 import 'package:zero_waste/theme.dart';
+import 'package:zero_waste/notification_listener.dart'; // Import the notification listener
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();

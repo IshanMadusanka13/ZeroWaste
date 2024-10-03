@@ -56,10 +56,10 @@ class SelectDropdown extends StatelessWidget {
                   );
                 }).toList(),
                 isExpanded: true,
-                icon: Icon(Icons.arrow_drop_down, color: Colors.green),
+                icon: const Icon(Icons.arrow_drop_down, color: Colors.green),
                 iconSize: 24,
                 dropdownColor: Colors.white,
-                style: TextStyle(color: Colors.black, fontSize: 16),
+                style: const TextStyle(color: Colors.black, fontSize: 16),
               ),
             ),
           ],
