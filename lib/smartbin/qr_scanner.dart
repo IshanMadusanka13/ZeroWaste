@@ -158,7 +158,7 @@ class _QRViewExampleState extends State<QRViewExample> {
     final url = 'https://fcm.googleapis.com/fcm/send';
     final headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'key=YOUR_SERVER_KEY', // Replace with your server key
+      'Authorization': 'AIzaSyAz2CGHaNBaDGCtcm7gZk3uFP29MbobIsM', // Replace with your server key
     };
     final body = jsonEncode({
       'to': fcmToken,

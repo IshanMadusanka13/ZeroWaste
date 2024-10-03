@@ -61,17 +61,17 @@ class _NotificationListenerState extends State<NotificationListener> {
   }
 
   // Function to launch the URL in the default browser
-  Future<void> _launchURL(String coordinates) async {
-    String location = coordinates; // e.g., '34.0522,-118.2437'
-    String url = 'https://www.google.com/maps/search/?api=1&query=$location'; // Construct the URL
+  Future<void> _launchURL() async {
+    String url = 'https://flutter.dev'; // Test with a known working URL
 
-    Uri uri = Uri.parse(url); // Parse the URL
+    Uri uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication); // Launch the URL
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
-      throw 'Could not launch $url'; // Error handling
+      throw 'Could not launch $url';
     }
   }
+
 
   // Function to delete the alert_message from Firebase
   Future<void> _deleteAlertMessage() async {
@@ -142,7 +142,7 @@ class _NotificationListenerState extends State<NotificationListener> {
                       Center(
                         child: ElevatedButton(
                           onPressed: () {
-                            _launchURL('34.0522,-118.2437'); // Replace with actual coordinates
+                            _launchURL(); // Replace with actual coordinates
                           },
                           child: const Text('View'),
                         ),
