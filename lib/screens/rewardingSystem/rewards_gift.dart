@@ -34,8 +34,9 @@ class _RewardsGiftScreenState extends State<RewardsGiftScreen> {
 
   void getUser() {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    if (userProvider.user != null) {
+    if (userProvider.user == null) {
       context.go('/user/login');
+      return;
     }
     loginedUser = userProvider.user!;
     HouseholdUserRepository()

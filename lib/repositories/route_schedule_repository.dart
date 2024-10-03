@@ -86,4 +86,16 @@ class RouteScheduleRepository {
         .map((doc) => RouteSchedule.fromDocument(doc))
         .toList();
   }
+
+  Future<List<RouteSchedule>> getSchedulesByDate() async {
+    final now = DateTime.now();
+    final scheduleDate = DateTime(now.year, now.month, now.day); // Sets to midnight of today
+
+    final schedules =
+        await _scheduleCollection.where('scheduleDate', isGreaterThanOrEqualTo: scheduleDate).get();
+
+    return schedules.docs
+        .map((doc) => RouteSchedule.fromDocument(doc))
+        .toList();
+  }
 }

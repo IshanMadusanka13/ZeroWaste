@@ -6,10 +6,9 @@ class AppThemes {
   static final lightTheme = ThemeData(
     primarySwatch: Colors.teal,
     colorScheme: const ColorScheme.light(
-      primary: Color(0xFF2EA171),//"#2ea171"
-      secondary: Colors.amber,
-      surface: Colors.white,
-      error: Colors.red,
+      primary: Color(0x00069349),//"#069349 "
+      secondary: Color(0x00e2e1e1),//"#E2E1E1 "
+      tertiary: Color(0x004B4B4B),//"#4B4B4B "
     ),
     textTheme: const TextTheme(
       displayLarge: TextStyle(fontSize: 32.0, fontWeight: FontWeight.bold, color: Colors.teal),

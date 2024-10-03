@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:zero_waste/models/employee.dart';
 import 'package:zero_waste/models/household_user.dart';
 import 'package:zero_waste/models/user.dart';
+import 'package:zero_waste/screens/binManagement/schedule_details.dart';
 import 'package:zero_waste/utils/custom_bins_icons.dart';
 import 'package:zero_waste/utils/user_types.dart';
 import '../../providers/user_provider.dart';
@@ -192,6 +193,12 @@ class ProfileViewScreen extends StatelessWidget {
                 text: 'Reward Items',
                 onTap: () => context.go('/reward/items'),
               ),
+              _buildProfileOption(
+                context: context,
+                icon: Icons.card_giftcard,
+                text: 'Reward Points',
+                onTap: () => context.go('/reward/points'),
+              ),
             ],
           );
         case UserTypes.TRUCK_DRIVER:
@@ -204,7 +211,16 @@ class ProfileViewScreen extends StatelessWidget {
           return const SizedBox(height: 0);
       }
     } else {
-      return const SizedBox(height: 0);
+      return Column(
+        children: [
+          _buildProfileOption(
+            context: context,
+            icon: Icons.card_giftcard,
+            text: 'Reward Gifts',
+            onTap: () => context.go('/reward/gifts'),
+          ),
+        ],
+      );
     }
   }
 

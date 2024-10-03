@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:zero_waste/providers/user_provider.dart';
+import 'package:zero_waste/screens/binManagement/schedule_details.dart';
+import 'package:zero_waste/widgets/dialog_messages.dart';
 import 'package:zero_waste/widgets/submit_button.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -59,6 +61,20 @@ class HomeScreen extends StatelessWidget {
                       icon: Icons.history,
                       route: '/profile',
                     ),
+                    const SizedBox(height: 20),
+                  ElevatedButton.icon(
+                    onPressed: () => executeMethod(context),
+                    icon: Icon(Icons.add_circle_outline),
+                    label: const Text("Print"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                  ),
                     const SizedBox(height: 20),
                     _buildDashboardButton(
                       context: context,
@@ -135,5 +151,13 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  executeMethod(BuildContext context) {
+    ScheduleDetails().getDetails(context).then((_){
+      print("YO YO");
+    }).catchError((error){
+      okMessageDialog(context, "Failed", error.toString());
+    });
   }
 }
