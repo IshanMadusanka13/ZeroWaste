@@ -90,6 +90,13 @@ class HomeScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     _buildDashboardButton(
+                      context: context, 
+                      text: 'Garbage Assistant', 
+                      icon: Icons.tips_and_updates, 
+                      route: '/inquiry'
+                    ),
+                    const SizedBox(height: 20),
+                    _buildDashboardButton(
                       context: context,
                       text: 'User History',
                       icon: Icons.history,
