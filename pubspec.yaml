@@ -33,15 +33,15 @@ dependencies:
   flutter_native_splash: any
   logger: ^2.4.0
   flutter_onboarding_slider: any
-  qr_code_scanner: any
   image: any
   path_provider: any
   image_gallery_saver: any
   permission_handler: any
   awesome_notifications: any
   url_launcher: any
-  firebase_messaging: ^15.1.3
+  firebase_messaging: any
   qr_flutter: any
+  qr_code_scanner: ^1.0.1
 
 dev_dependencies:
   flutter_test:
