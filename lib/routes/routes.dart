@@ -9,6 +9,11 @@ import 'package:zero_waste/screens/userManagement/login_screen.dart';
 import 'package:zero_waste/screens/splash_screen.dart';
 import 'package:zero_waste/screens/userManagement/register_screen.dart';
 
+import '../notification_listener.dart';
+import '../smartbin/garbage_level.dart';
+import '../smartbin/qr_genarator.dart';
+import '../smartbin/qr_scanner.dart';
+
 class AppRouter {
   static final router = GoRouter(
     routes: [
@@ -17,15 +22,18 @@ class AppRouter {
       GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
 
       //User Management Routes
-      GoRoute(path: '/user/login', builder: (context, state) => LoginScreen()),
+      GoRoute(
+          path: '/user/login',
+          builder: (context, state) => const LoginScreen()),
       GoRoute(
           path: '/user/register',
-          builder: (context, state) => RegisterScreen()),
+          builder: (context, state) => const RegisterScreen()),
 
       //Bin Management Routes
-      GoRoute(path: '/bin/view', builder: (context, state) => BinView()),
+      GoRoute(path: '/bin/view', builder: (context, state) => const BinView()),
       GoRoute(
-          path: '/bin/create', builder: (context, state) => CreateBinScreen()),
+          path: '/bin/create',
+          builder: (context, state) => const CreateBinScreen()),
 
       //Garbage Collection Routes
       GoRoute(
@@ -39,6 +47,20 @@ class AppRouter {
       GoRoute(
           path: '/reward/manage',
           builder: (context, state) => const ManageRewardsScreen()),
+      //smartbin level routes
+      GoRoute(
+          path: '/smartbin/garabagelevel',
+          builder: (context, state) => GarbageLevelPage()),
+      GoRoute(
+          path: '/smartbin/qrgenarate',
+          builder: (context, state) => QrGenerate()),
+      GoRoute(
+          path: '/smartbin/qrscanner',
+          builder: (context, state) => QRScanPage()),
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) => NotificationListener(),
+      ),
     ],
   );
 }

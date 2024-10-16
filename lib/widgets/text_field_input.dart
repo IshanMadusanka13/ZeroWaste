@@ -7,7 +7,7 @@ class TextFieldInput extends StatelessWidget {
   final String? Function(String?)? validator;
   final TextInputType inputType;
 
-  TextFieldInput({
+  const TextFieldInput({
     super.key,
     required this.icon,
     required this.title,
